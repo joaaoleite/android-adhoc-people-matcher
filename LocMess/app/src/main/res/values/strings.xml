@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">LocMess</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="login">Log In</string>
     <string name="signup">Sign Up</string>
+    <string name="password">Password</string>
+    <string name="password_confirmation">Confirm Password</string>
+    <string name="username">Username</string>
+    <string name="registered">Not registered yet?</string>
 </resources>
