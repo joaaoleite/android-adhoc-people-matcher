@@ -22,6 +22,11 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view){
 
+        //  TODO: login logic verification
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public void register(View view){

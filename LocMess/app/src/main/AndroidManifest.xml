@@ -18,13 +18,16 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:label="Sign Up"
+            android:label="@string/signup"
             android:parentActivityName=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.cmu.locmess.LoginActivity" />
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_profile"></activity>
     </application>
 
 </manifest>

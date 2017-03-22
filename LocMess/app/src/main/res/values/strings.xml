@@ -7,4 +7,11 @@
     <string name="password_confirmation">Confirm Password</string>
     <string name="username">Username</string>
     <string name="registered">Not registered yet?</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_locations">Locations</string>
+    <string name="title_messages">Messages</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
