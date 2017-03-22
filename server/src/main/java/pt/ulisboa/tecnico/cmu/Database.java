@@ -1,22 +1,24 @@
 package pt.ulisboa.tecnico.cmu;
 
+import pt.ulisboa.tecnico.cmu.controllers.*;
+
 public class Database{
 
-    private Users users;
-    private Locations locations;
-    private Messages messages;
+    private static Users users;
+    private static Locations locations;
+    private static Messages messages;
 
     public static Users Users(){
-        if(this.users == null) this.users = new Users();
-        return this.users;
+        if(users == null) users = new Users();
+        return users;
     }
     public static Locations Locations(){
-        if(this.locations == null) this.locations = new Locations();
-        return this.locations;
+        if(locations == null) locations = new Locations();
+        return locations;
     }
     public static Messages Messages(){
-        if(this.messages == null) this.messages = new Messages();
-        return this.messages;
+        if(messages == null) messages = new Messages();
+        return messages;
     }
 
 

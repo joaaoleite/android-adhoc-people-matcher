@@ -1,15 +1,17 @@
 package pt.ulisboa.tecnico.cmu;
-import static spark.Spark.*;
+
+import pt.ulisboa.tecnico.cmu.server.*;
+import java.util.HashMap;
 
 public class Routes{
     private HTTP http;
 
     public Routes(){
-        this.http = new HTTP();
+        this.http = new HTTP(8080);
     }
 
     public void launch(){
-        http.post("/signup", (HashMap<String, String> params, String user) -> {
+        /*http.post("/signup", (HashMap<String, String> params, String user) -> {
             try{
                 String username = params.get("username");
                 String password = params.get("password");
@@ -37,7 +39,7 @@ public class Routes{
             catch(Exception e){
                 return Response.ERROR;
             }
-        });
+        });*/
     }
 
 }
