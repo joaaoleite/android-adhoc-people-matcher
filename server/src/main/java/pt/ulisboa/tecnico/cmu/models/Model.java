@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.cmu.models;
 
+import org.json.JSONObject;
+
 public abstract class Model{
 
-    protected abstract JSONObject toJSON();
+    public abstract JSONObject toJSON();
 
-    
 }
