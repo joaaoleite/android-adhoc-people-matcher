@@ -8,6 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.cmu.locmess.models.KeyValue;
+import pt.ulisboa.tecnico.cmu.locmess.models.KeyValueAdapter;
 
 
 /**
@@ -59,20 +65,32 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        ArrayAdapter adapter = new ArrayAdapter<String>(this,
-                R.layout.fragment_profile, mobileArray);
-
-        ListView listView = (ListView) findViewById(R.id.mobile_list);
-        listView.setAdapter(adapter);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        ArrayList<KeyValue> pairs = new ArrayList<KeyValue>();
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("asd","123"));
+        pairs.add(new KeyValue("asd","123"));
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("asd","123"));
+        pairs.add(new KeyValue("asd","123"));
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("key","value"));
+        pairs.add(new KeyValue("asd","123"));
+        pairs.add(new KeyValue("asd","123"));
+        KeyValueAdapter adapter = new KeyValueAdapter(this.getContext(), pairs);
+        ListView listView = (ListView) view.findViewById(R.id.list_container);
+        listView.setAdapter(adapter);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
