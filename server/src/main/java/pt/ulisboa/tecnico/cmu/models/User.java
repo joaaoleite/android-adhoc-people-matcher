@@ -16,6 +16,10 @@ public class User extends Model{
 		tags = new HashMap<String, String>();
 	}
 
+	public String getPassword(){
+		return this.password;
+	}
+
     @Override
     public JSONObject toJSON(){
         JSONObject obj = new JSONObject();

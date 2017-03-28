@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.cmu;
 
 import pt.ulisboa.tecnico.cmu.server.*;
-import java.util.HashMap;
+import spark.QueryParamsMap;
 
 public class Routes{
     private HTTP http;
@@ -11,19 +11,19 @@ public class Routes{
     }
 
     public void launch(){
-        /*http.post("/signup", (HashMap<String, String> params, String user) -> {
+        http.POST("/signup", (QueryParamsMap params, String user) -> {
             try{
-                String username = params.get("username");
-                String password = params.get("password");
-                Database.Users().create(username, password);
+                String username = params.value("username");
+                String password = params.value("password");
+                Database.Users().createUser(username, password);
                 return Response.OK;
             }
             catch(Exception e){
-                return Reponse.ERROR;
+                return Response.ERROR;
             }
         });
 
-        http.get("/locations", (HashMap<String, String> params, String user) -> {
+        /*http.get("/locations", (HashMap<String, String> params, String user) -> {
             try{
                 return Database.Locations().list(params.get("filter"));
             }
