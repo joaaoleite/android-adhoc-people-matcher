@@ -1,17 +1,14 @@
 package pt.ulisboa.tecnico.cmu.locmess;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+
+import pt.ulisboa.tecnico.cmu.locmess.fragments.profile.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,15 +21,15 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_profile:
-                    setTitle(getResources().getString(R.string.title_profile));
-                    fragment = ProfileFragment.newInstance("test","test");
+                    setTitle(R.string.title_profile);
+                    fragment = ProfileFragment.newInstance();
                     break;
                 case R.id.navigation_locations:
-                    setTitle(getResources().getString(R.string.title_locations));
+                    setTitle(R.string.title_locations);
                     fragment = LocationsFragment.newInstance("test","test");
                     break;
                 case R.id.navigation_messages:
-                    setTitle(getResources().getString(R.string.title_messages));
+                    setTitle(R.string.title_messages);
                     fragment = MessagesFragment.newInstance("test","test");
                     break;
             }
@@ -51,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, ProfileFragment.newInstance("","")).commit();
+                .replace(R.id.main_container, ProfileFragment.newInstance()).commit();
+
     }
 }

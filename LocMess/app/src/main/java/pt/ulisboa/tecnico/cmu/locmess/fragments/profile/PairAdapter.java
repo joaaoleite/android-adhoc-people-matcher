@@ -1,0 +1,70 @@
+package pt.ulisboa.tecnico.cmu.locmess.fragments.profile;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.util.List;
+
+import pt.ulisboa.tecnico.cmu.locmess.R;
+
+public class PairAdapter extends ArrayAdapter<PairModel>{
+
+    private static class ViewHolder {
+        TextView key;
+        TextView value;
+    }
+    private int lastPosition = -1;
+    private List<PairModel> list;
+
+    public PairAdapter(Context context, List<PairModel> list){
+        super(context, R.layout.layout_pair);
+        this.list = list;
+    }
+
+    @Override
+    public PairModel getItem(int position){
+        return list.get(position);
+    }
+    @Override
+    public int getCount() {
+        return list.size();
+    }
+
+    @Override
+    public View getView(int position, View view, ViewGroup parent) {
+
+        PairModel pair = getItem(position);
+
+        ViewHolder holder;
+
+        final View result;
+
+        if (view == null) {
+
+            holder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            view = inflater.inflate(R.layout.layout_pair, parent, false);
+
+            holder.key = (TextView) view.findViewById(R.id.key);
+            holder.value = (TextView) view.findViewById(R.id.value);
+
+            result = view;
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
+            result = view;
+        }
+
+        lastPosition = position;
+        holder.key.setText(pair.getKey());
+        holder.value.setText(pair.getValue());
+
+        return view;
+    }
+}
