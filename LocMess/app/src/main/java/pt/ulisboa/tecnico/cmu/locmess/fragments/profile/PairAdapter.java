@@ -31,6 +31,7 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
     public PairModel getItem(int position){
         return list.get(position);
     }
+
     @Override
     public int getCount() {
         return list.size();
@@ -65,6 +66,6 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
         holder.key.setText(pair.getKey());
         holder.value.setText(pair.getValue());
 
-        return view;
+        return result;
     }
 }
