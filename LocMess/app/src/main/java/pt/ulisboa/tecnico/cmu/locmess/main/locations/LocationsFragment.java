@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.locmess;
+package pt.ulisboa.tecnico.cmu.locmess.main.locations;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,18 +7,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import pt.ulisboa.tecnico.cmu.locmess.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MessagesFragment.OnFragmentInteractionListener} interface
+ * {@link LocationsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MessagesFragment#newInstance} factory method to
+ * Use the {@link LocationsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MessagesFragment extends Fragment {
+public class LocationsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +31,7 @@ public class MessagesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public MessagesFragment() {
+    public LocationsFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +41,11 @@ public class MessagesFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MessagesFragment.
+     * @return A new instance of fragment LocationsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MessagesFragment newInstance(String param1, String param2) {
-        MessagesFragment fragment = new MessagesFragment();
+    public static LocationsFragment newInstance(String param1, String param2) {
+        LocationsFragment fragment = new LocationsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,9 +66,7 @@ public class MessagesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_messages, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_locations, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

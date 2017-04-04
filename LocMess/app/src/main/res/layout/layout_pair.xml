@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:longClickable="true"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,6 +10,8 @@
     android:paddingBottom="13dp">
 
     <TextView
+        android:clickable="false"
+        android:focusable="false"
         android:id="@+id/key"
         android:paddingRight="10dp"
         android:layout_width="0dp"
@@ -21,6 +22,8 @@
         android:layout_weight="0.5" />
 
     <TextView
+        android:clickable="false"
+        android:focusable="false"
         android:id="@+id/value"
         android:textSize="16dp"
         android:layout_width="0dp"

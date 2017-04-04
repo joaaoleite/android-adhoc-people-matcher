@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.locmess.fragments.profile;
+package pt.ulisboa.tecnico.cmu.locmess.main.profile;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,16 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import pt.ulisboa.tecnico.cmu.locmess.MainActivity;
 import pt.ulisboa.tecnico.cmu.locmess.R;
 
-public class ProfileFragment extends Fragment implements AdapterView.OnItemLongClickListener {
+public class ProfileFragment extends Fragment implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener  {
 
     private static ProfileFragment singleton;
     private ArrayList<PairModel> pairs;
@@ -127,12 +124,19 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
     }
     private void adapter(){
         list.setOnItemLongClickListener(this);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("profile","enter onItemClick...");
+            }
+        });
         PairAdapter adapter = new PairAdapter(view.getContext(), (ArrayList) pairs);
         list.setAdapter(adapter);
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View item, int position, long arg3) {
+    public boolean onItemLongClick(AdapterView<?> parent, View item, int position, long id) {
+        Log.d("profile","onItemLongClick");
         PairModel pair = pairs.get(position);
         pair.view = item;
         if(!pair.isSelected()) {
@@ -145,4 +149,20 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
         deleteButton.setVisible(selected > 0);
         return true;
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View item, int position, long id){
+        PairModel pair = pairs.get(position);
+
+        Log.d("profile","onItemClick");
+
+        if(pair.isSelected()){
+            Log.d("profile","isSeleted");
+            item.setSelected(pair.toogle());
+            selected--;
+        }
+        deleteButton.setVisible(selected > 0);
+    }
+
+
 }

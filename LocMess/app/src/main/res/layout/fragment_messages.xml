@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pt.ulisboa.tecnico.cmu.locmess.MessagesFragment">
+    tools:context="pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.locmess.fragments.profile;
+package pt.ulisboa.tecnico.cmu.locmess.main.profile;
 
 import android.view.View;
 

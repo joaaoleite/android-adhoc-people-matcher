@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.locmess;
+package pt.ulisboa.tecnico.cmu.locmess.main;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +8,10 @@ import android.view.MenuItem;
 
 import android.support.v4.app.Fragment;
 
-import pt.ulisboa.tecnico.cmu.locmess.fragments.profile.ProfileFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
+import pt.ulisboa.tecnico.cmu.locmess.R;
 
 public class MainActivity extends AppCompatActivity {
 

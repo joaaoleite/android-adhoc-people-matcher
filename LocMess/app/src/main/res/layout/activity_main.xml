@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmu.locmess.MainActivity">
+    tools:context="pt.ulisboa.tecnico.cmu.locmess.main.MainActivity">
 
     <FrameLayout
         android:id="@+id/content"
