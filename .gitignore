@@ -39,4 +39,7 @@ buildNumber.properties
 # Exclude maven wrapper
 !/.mvn/wrapper/maven-wrapper.jar
 
+effective.pom
+.classpath
+
 # End of https://www.gitignore.io/api/maven,java
