@@ -18,12 +18,19 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
         TextView value;
     }
     private int lastPosition = -1;
-    private List<PairModel> list;
+    public List<PairModel> list;
 
     public PairAdapter(Context context, List<PairModel> list){
         super(context, R.layout.layout_pair);
         this.list = list;
     }
+
+    public void insertItem(PairModel p){
+        list.add(p);
+        // alphabetic
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public PairModel getItem(int position){
