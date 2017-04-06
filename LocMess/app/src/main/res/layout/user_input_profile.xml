@@ -13,6 +13,12 @@
         android:text="Criar novo KeyPair"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:id="@+id/infoInputDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"/>
+
     <EditText
         android:id="@+id/keyInputDialog"
         android:layout_width="match_parent"

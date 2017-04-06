@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
 import java.util.ArrayList;
@@ -65,35 +66,73 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
             myFab.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(f.getContext());
-                    View mView = layoutInflaterAndroid.inflate(R.layout.user_input_profile, container, false);
+                    final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_profile, container, false);
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(f.getContext());
                     alertDialogBuilderUserInput.setView(mView);
 
                     final EditText etKeyInputDialog = (EditText) mView.findViewById(R.id.keyInputDialog);
                     final EditText etValueInputDialog = (EditText) mView.findViewById(R.id.valueInputDialog);
 
+
+
+
+
                     alertDialogBuilderUserInput
                             .setCancelable(false)
-                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogBox, int id) {
-
-                                    adapter.insertItem(new PairModel(etKeyInputDialog.getText().toString(),etValueInputDialog.getText().toString()));
-                                    ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
-                                }
+                            .setPositiveButton("Add",new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface d, int w){}
                             })
                             .setNegativeButton("Cancel",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialogBox, int id) {
-                                            dialogBox.cancel();
-                                        }
-                                    });
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        dialogBox.cancel();
+                                    }
+                                }
+                            );
 
-                    AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+
+
+                    final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
+                    alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String key = etKeyInputDialog.getText().toString();
+                            String value = etValueInputDialog.getText().toString();
+
+                            Log.d("profile","key: "+key);
+
+                            if (!isTextValid(key) || !isTextValid(value)){
+                                TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
+                                info.setText("Inválido");
+                                return;
+                            }
+                            PairModel keypair = new PairModel(key,value);
+                            adapter.insertItem(keypair);
+                            ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
+                            postKeyPairToServer(keypair);
+
+                            alertDialogAndroid.dismiss();
+                        }
+                    });
+
                 }
             });
         }
         return view;
+    }
+
+    public boolean isTextValid(String text){
+        String pattern= "^[a-zA-Z0-9 ]+$";
+        return text.matches(pattern);
+
+    }
+
+
+    public void postKeyPairToServer(PairModel keypair){
+        // TODO: Server Requests
     }
 
     @Override
@@ -107,17 +146,23 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
     public boolean onOptionsItemSelected(MenuItem item) {
 
         for (int i = 0; i < adapter.getCount(); i++) {
+            PairModel keypair = adapter.getItem(i);
             Log.d("profile", "i="+i);
-            if(adapter.getItem(i).isSelected()) {
+            if(keypair.isSelected()) {
                 adapter.list.remove(i);
                 adapter.notifyDataSetChanged();
                 i--;
+                deleteKeyPairOnServer(keypair);
             }
         }
         selected=0;
         deleteButton.setVisible(selected > 0);
 
         return true;
+    }
+
+    public void deleteKeyPairOnServer(PairModel keypair){
+        // TODO: Server Requests
     }
 
     @Override
