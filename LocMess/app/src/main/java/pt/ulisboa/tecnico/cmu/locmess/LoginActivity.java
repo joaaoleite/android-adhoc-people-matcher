@@ -39,16 +39,24 @@ public class LoginActivity extends AppCompatActivity {
         //  TODO: login logic verification
 
 
-        if (!isUsernameValid(etUsername.getText().toString())){
+        String username = etUsername.getText().toString();
+        String password = etPassword.getText().toString();
+
+        if (!isUsernameValid(username)){
             dialogAlert("Invalid Username");
             return;
         }
 
+        if (!passwordEmpty(password)){
+            dialogAlert("You need to put a password");
+           return;
+        }
+
         loadingDialog("Please wait...");
-        loginOnServer();
+        loginOnServer(username, password);
     }
 
-    public void loginOnServer(){
+    public void loginOnServer(String username, String password){
         // TODO: API Requests
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -71,6 +79,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private boolean passwordEmpty(String password){
+        return password.length()>0;
+    }
 
     private boolean isUsernameValid(String username) {
         String pattern= "^[a-zA-Z0-9]+$";

@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,12 +72,24 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(f.getContext());
                     alertDialogBuilderUserInput.setView(mView);
 
-                    final EditText etKeyInputDialog = (EditText) mView.findViewById(R.id.keyInputDialog);
-                    final EditText etValueInputDialog = (EditText) mView.findViewById(R.id.valueInputDialog);
+                    final AutoCompleteTextView etKeyInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.keyInputDialog);
+                    final AutoCompleteTextView etValueInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.valueInputDialog);
 
+                    etValueInputDialog.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        public void onFocusChange(View v, boolean hasFocus) {
+                            if(hasFocus) {
+                                String[] values = getServerValuesAutoComplete(etKeyInputDialog.getText().toString().toLowerCase());
+                                ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
+                                        (view.getContext(), R.layout.autocomplete_item,values);
+                                etValueInputDialog.setAdapter(autocomplete);
+                            }
+                        }
+                    });
 
-
-
+                    String[] keys = getServerKeysAutoComplete();
+                    ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
+                            (view.getContext(), R.layout.autocomplete_item,keys);
+                    etKeyInputDialog.setAdapter(autocomplete);
 
                     alertDialogBuilderUserInput
                             .setCancelable(false)
@@ -91,22 +105,20 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
                                 }
                             );
 
-
-
                     final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
                     alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
-                            String key = etKeyInputDialog.getText().toString();
-                            String value = etValueInputDialog.getText().toString();
+                            String key = etKeyInputDialog.getText().toString().toLowerCase();
+                            String value = etValueInputDialog.getText().toString().toLowerCase();
 
                             Log.d("profile","key: "+key);
 
                             if (!isTextValid(key) || !isTextValid(value)){
                                 TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                                info.setText("Inválido");
+                                info.setText("Text fields can't be empty");
                                 return;
                             }
                             PairModel keypair = new PairModel(key,value);
@@ -122,6 +134,14 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
             });
         }
         return view;
+    }
+
+    public String[] getServerKeysAutoComplete(){
+        return new String[]{"clube","cor","restaurante"};
+    }
+
+    public String[] getServerValuesAutoComplete(String key){
+        return new String[]{"cvermelho","cazul","camarelo", "cona", "calhalho", "caralaocive", "caefac", "cafevrg", "caioevni","camelo","cacieoinap","cabuba"};
     }
 
     public boolean isTextValid(String text){
@@ -200,21 +220,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
 
     private List<PairModel> populate(){
         ArrayList<PairModel> pairs = new ArrayList<PairModel>();
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
         pairs.add(new PairModel("restaurante","capitanga"));
         pairs.add(new PairModel("clube","benfica"));
         pairs.add(new PairModel("cor","vermelho"));

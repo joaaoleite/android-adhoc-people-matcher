@@ -19,18 +19,22 @@
         android:layout_height="wrap_content"
         android:textColor="@color/red"/>
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/keyInputDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter key"
-        android:inputType="text" />
+        android:inputType="text"
+        android:completionThreshold="1"
+        android:ems="10"/>
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/valueInputDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter value"
-        android:inputType="text" />
+        android:inputType="text"
+        android:completionThreshold="1"
+        android:ems="10"/>
 
 </LinearLayout>

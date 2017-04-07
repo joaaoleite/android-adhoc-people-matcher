@@ -26,8 +26,16 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
     }
 
     public void insertItem(PairModel p){
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getKey().equals(p.getKey())){
+                list.get(i).setValue(p.getValue());
+                notifyDataSetChanged();
+                return;
+            }
+        }
+
         list.add(p);
-        // alphabetic
         notifyDataSetChanged();
     }
 
