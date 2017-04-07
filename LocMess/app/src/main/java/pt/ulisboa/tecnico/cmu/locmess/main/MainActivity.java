@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_locations:
                     setTitle(R.string.title_locations);
-                    fragment = LocationsFragment.newInstance("test","test");
+                    fragment = LocationsFragment.newInstance();
                     break;
                 case R.id.navigation_messages:
                     setTitle(R.string.title_messages);
