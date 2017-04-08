@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment">
+    tools:context="pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment">
 
-    <FrameLayout
-        android:id="@+id/main_container"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

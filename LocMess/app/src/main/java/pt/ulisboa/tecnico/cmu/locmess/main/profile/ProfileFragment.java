@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
 
 public class ProfileFragment extends Fragment implements AdapterView.OnItemLongClickListener  {
 
@@ -33,7 +33,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
     private View view;
     private ListView list;
     private PairAdapter adapter;
-    private MenuItem deleteButton;
 
 
     public ProfileFragment() {
@@ -48,9 +47,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        setHasOptionsMenu(true);
-
-
     }
 
     @Override
@@ -154,16 +150,7 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
         // TODO: Server Requests
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.profile_toolbar,menu);
-        this.deleteButton = menu.getItem(0);
-        this.deleteButton.setVisible(false);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
+    public void deleteClicked() {
         for (int i = 0; i < adapter.getCount(); i++) {
             PairModel keypair = adapter.getItem(i);
             Log.d("profile", "i="+i);
@@ -175,9 +162,7 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
             }
         }
         selected=0;
-        deleteButton.setVisible(selected > 0);
-
-        return true;
+        ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
     }
 
     public void deleteKeyPairOnServer(PairModel keypair){
@@ -242,7 +227,7 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
             item.setSelected(pair.toogle());
             selected--;
         }
-        deleteButton.setVisible(selected > 0);
+        ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
         return true;
     }
 

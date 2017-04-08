@@ -4,10 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,12 +27,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+
+import static android.R.attr.fragment;
 
 
-public class LocationsFragment extends Fragment implements OnMapReadyCallback {
+public class LocationsFragment extends Fragment {
 
     private static LocationsFragment singleton;
-    private GoogleMap map;
+    private Fragment fragment;
+    private boolean map = false;
 
     public LocationsFragment() {}
 
@@ -46,31 +57,33 @@ public class LocationsFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
 
-        MapView mapView = (MapView) view.findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);
-        mapView.onResume();
-        mapView.getMapAsync(this);
 
+        fragment = ListSubFragment.newInstance();
+
+        ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(true);
+
+        getChildFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
         return view;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void MapClicked(MenuItem item) {
+
+        if (map) {
+            fragment = ListSubFragment.newInstance();
+            item.setIcon(R.drawable.ic_satellite_black_24dp);
+
+        } else {
+            fragment = MapSubFragment.newInstance();
+            item.setIcon(R.drawable.ic_list_black_24dp);
+        }
+        map = !map;
+
+        getChildFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-
-        LatLng location = new LatLng(38.740561,-9.304168);
-        map.addMarker(new MarkerOptions().position(location).title("É o panda!"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(location));
+        ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(false);
     }
 }
