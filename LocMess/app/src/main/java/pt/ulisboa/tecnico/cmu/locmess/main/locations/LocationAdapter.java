@@ -28,10 +28,13 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
     public void insertItem(LocationModel p){
 
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getSsid().equals(p.getSsid())){
-                list.get(i).setName(p.getName());
-                notifyDataSetChanged();
-                return;
+            String ssid = list.get(i).getSsid();
+            if (ssid!=null){
+                if(ssid.equals(p.getSsid())) {
+                    list.get(i).setName(p.getName());
+                    notifyDataSetChanged();
+                    return;
+                }
             }
         }
 
