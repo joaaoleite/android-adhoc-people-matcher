@@ -11,25 +11,25 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 
-public class PairAdapter extends ArrayAdapter<PairModel> {
+public class LocationAdapter extends ArrayAdapter<LocationModel> {
 
     private static class ViewHolder {
-        TextView key;
-        TextView value;
+        TextView type;
+        TextView name;
     }
     private int lastPosition = -1;
-    public List<PairModel> list;
+    public List<LocationModel> list;
 
-    public PairAdapter(Context context, List<PairModel> list){
-        super(context, R.layout.layout_pair);
+    public LocationAdapter(Context context, List<LocationModel> list){
+        super(context, R.layout.layout_pair_locations);
         this.list = list;
     }
 
-    public void insertItem(PairModel p){
+    public void insertItem(LocationModel p){
 
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getKey().equals(p.getKey())){
-                list.get(i).setValue(p.getValue());
+            if (list.get(i).getSsid().equals(p.getSsid())){
+                list.get(i).setName(p.getName());
                 notifyDataSetChanged();
                 return;
             }
@@ -41,7 +41,7 @@ public class PairAdapter extends ArrayAdapter<PairModel> {
 
 
     @Override
-    public PairModel getItem(int position){
+    public LocationModel getItem(int position){
         return list.get(position);
     }
 
@@ -53,8 +53,7 @@ public class PairAdapter extends ArrayAdapter<PairModel> {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        PairModel pair = getItem(position);
-
+        LocationModel location = list.get(position);
         ViewHolder holder;
 
         final View result;
@@ -63,10 +62,10 @@ public class PairAdapter extends ArrayAdapter<PairModel> {
 
             holder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.layout_pair, parent, false);
+            view = inflater.inflate(R.layout.layout_pair_locations, parent, false);
 
-            holder.key = (TextView) view.findViewById(R.id.key);
-            holder.value = (TextView) view.findViewById(R.id.value);
+            holder.type = (TextView) view.findViewById(R.id.type);
+            holder.name = (TextView) view.findViewById(R.id.name);
 
             result = view;
             view.setTag(holder);
@@ -76,8 +75,8 @@ public class PairAdapter extends ArrayAdapter<PairModel> {
         }
 
         lastPosition = position;
-        holder.key.setText(pair.getKey());
-        holder.value.setText(pair.getValue());
+        holder.type.setText(location.getType());
+        holder.name.setText(location.getName());
 
         return result;
     }
