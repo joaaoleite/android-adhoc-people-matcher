@@ -9,9 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,8 +22,9 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
 
-public class ProfileFragment extends Fragment implements AdapterView.OnItemLongClickListener  {
+public class ProfileFragment extends MyFragment implements AdapterView.OnItemLongClickListener  {
 
     private static ProfileFragment singleton;
     private int selected;
@@ -149,8 +147,9 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemLongC
     public void postKeyPairToServer(PairModel keypair){
         // TODO: Server Requests
     }
-
+    @Override
     public void deleteClicked() {
+        Log.d("profile","delete");
         for (int i = 0; i < adapter.getCount(); i++) {
             PairModel keypair = adapter.getItem(i);
             Log.d("profile", "i="+i);

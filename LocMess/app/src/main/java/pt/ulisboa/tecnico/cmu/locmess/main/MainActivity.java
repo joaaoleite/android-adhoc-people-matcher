@@ -5,14 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import android.support.v4.app.Fragment;
-
-import pt.ulisboa.tecnico.cmu.locmess.main.locations.ListSubFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment;
-import pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
 import pt.ulisboa.tecnico.cmu.locmess.R;
@@ -67,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
         //navigation.inflateMenu(R.menu.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        fragment = ProfileFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, ProfileFragment.newInstance()).commit();
+                .replace(R.id.main_container, fragment).commit();
 
     }
 
@@ -76,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                ((ProfileFragment) fragment).deleteClicked();
+                ((MyFragment) fragment).deleteClicked();
                 break;
             case R.id.map:
                 ((LocationsFragment) fragment).MapClicked(item);

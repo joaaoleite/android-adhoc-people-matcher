@@ -29,7 +29,7 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public static MapSubFragment newInstance() {
-        Log.d("locations","newInstance");
+        Log.d("map","newInstance");
         if(singleton == null) singleton = new MapSubFragment();
         return singleton;
     }

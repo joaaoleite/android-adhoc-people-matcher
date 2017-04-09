@@ -1,40 +1,20 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.locations;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
-import pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment;
-import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
-
-import static android.R.attr.fragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
 
 
-public class LocationsFragment extends Fragment {
+public class LocationsFragment extends MyFragment {
 
     private static LocationsFragment singleton;
     private Fragment fragment;
@@ -46,6 +26,11 @@ public class LocationsFragment extends Fragment {
         Log.d("locations","newInstance");
         if(singleton == null) singleton = new LocationsFragment();
         return singleton;
+    }
+    @Override
+    public void deleteClicked(){
+        if(fragment instanceof ListSubFragment)
+            ((ListSubFragment)fragment).deleteClicked();
     }
 
     @Override
