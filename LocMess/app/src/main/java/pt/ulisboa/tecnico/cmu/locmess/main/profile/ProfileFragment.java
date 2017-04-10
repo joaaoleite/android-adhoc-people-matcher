@@ -199,6 +199,8 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     @Override
     public void onDetach() {
         super.onDetach();
+        adapter.deselectAllItems();
+        ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(false);
     }
 
     private List<PairModel> populate(){

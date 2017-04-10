@@ -32,7 +32,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     private int selected;
     private View view;
     private ListView list;
-    private LocationAdapter adapter;
+    public static LocationAdapter adapter;
     private ProgressDialog dialog;
     private ViewGroup container;
 
@@ -170,7 +170,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     private void showSSIDDialog(String[] ssids){
         loadingDialog(false);
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this.getContext());
-        final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_location, container, false);
+        final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_wifi, container, false);
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this.getContext());
         alertDialogBuilderUserInput.setView(mView);
 

@@ -42,8 +42,8 @@ public class LocationsFragment extends MyFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
 
-
-        fragment = ListSubFragment.newInstance();
+        if(fragment==null)
+            fragment = ListSubFragment.newInstance();
 
         ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(true);
 

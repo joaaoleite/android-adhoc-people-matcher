@@ -29,6 +29,9 @@ public class PairModel {
         this.selected = !this.selected;
         return this.selected;
     }
+    public void deselect(){
+        this.selected = false;
+    }
 
     public boolean isSelected(){
         return this.selected;

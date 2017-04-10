@@ -25,6 +25,12 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
         this.list = list;
     }
 
+    public void deselectAllItems(){
+        for(PairModel p : list){
+            p.deselect();
+        }
+    }
+
     public void insertItem(PairModel p){
 
         for (int i = 0; i < list.size(); i++) {

@@ -10,7 +10,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add KeyPair"
+        android:text="Add GPS location"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -19,22 +19,31 @@
         android:layout_height="wrap_content"
         android:textColor="@color/red"/>
 
-    <AutoCompleteTextView
-        android:id="@+id/keyInputDialog"
+    <EditText
+        android:id="@+id/lat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter key"
-        android:inputType="text"
-        android:completionThreshold="1"
-        android:ems="10"/>
+        android:hint="Latitude"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/lon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Longitude"
+        android:inputType="text" />
 
-    <AutoCompleteTextView
-        android:id="@+id/valueInputDialog"
+    <EditText
+        android:id="@+id/radius"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter value"
-        android:inputType="text"
-        android:completionThreshold="1"
-        android:ems="10"/>
+        android:hint="Radius (meters)"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/inputName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Location name"
+        android:inputType="text" />
 
 </LinearLayout>
