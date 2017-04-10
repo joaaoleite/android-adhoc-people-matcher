@@ -1,4 +1,5 @@
-package pt.ulisboa.tecnico.cmu.locmess.main.locations;
+package pt.ulisboa.tecnico.cmu.locmess.main.messages;
+
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,32 +12,21 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 
-public class LocationAdapter extends ArrayAdapter<LocationModel> {
+public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
     private static class ViewHolder {
-        TextView type;
-        TextView name;
+        TextView user;
+        TextView subject;
     }
     private int lastPosition = -1;
-    public List<LocationModel> list;
+    public List<MessageModel> list;
 
-    public LocationAdapter(Context context, List<LocationModel> list){
-        super(context, R.layout.layout_locations);
+    public MessageAdapter(Context context, List<MessageModel> list){
+        super(context, R.layout.layout_messages);
         this.list = list;
     }
 
-    public void insertItem(LocationModel p){
-
-        for (int i = 0; i < list.size(); i++) {
-            String ssid = list.get(i).getSsid();
-            if (ssid!=null){
-                if(ssid.equals(p.getSsid())) {
-                    list.get(i).setName(p.getName());
-                    notifyDataSetChanged();
-                    return;
-                }
-            }
-        }
+    public void insertItem(MessageModel p){
 
         list.add(p);
         notifyDataSetChanged();
@@ -44,7 +34,7 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
 
 
     @Override
-    public LocationModel getItem(int position){
+    public MessageModel getItem(int position){
         return list.get(position);
     }
 
@@ -56,7 +46,7 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        LocationModel location = list.get(position);
+        MessageModel location = list.get(position);
         ViewHolder holder;
 
         final View result;
@@ -67,8 +57,8 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             view = inflater.inflate(R.layout.layout_locations, parent, false);
 
-            holder.type = (TextView) view.findViewById(R.id.type);
-            holder.name = (TextView) view.findViewById(R.id.name);
+            holder.user = (TextView) view.findViewById(R.id.user);
+            holder.subject = (TextView) view.findViewById(R.id.subject);
 
             result = view;
             view.setTag(holder);
@@ -78,8 +68,8 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
         }
 
         lastPosition = position;
-        holder.type.setText(location.getType());
-        holder.name.setText(location.getName());
+        holder.user.setText(location.getUser());
+        holder.subject.setText(location.getSubject());
 
         return result;
     }

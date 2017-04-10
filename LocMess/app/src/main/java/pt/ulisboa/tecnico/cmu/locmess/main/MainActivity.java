@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_messages:
                     setTitle(R.string.title_messages);
-                    fragment = MessagesFragment.newInstance("test", "test");
+                    fragment = MessagesFragment.newInstance();
                     break;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
