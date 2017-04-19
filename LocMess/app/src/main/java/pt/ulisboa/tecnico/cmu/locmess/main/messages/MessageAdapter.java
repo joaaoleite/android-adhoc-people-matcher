@@ -18,12 +18,14 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         TextView user;
         TextView subject;
     }
+    private String msgType;
     private int lastPosition = -1;
     public List<MessageModel> list;
 
     public MessageAdapter(Context context, List<MessageModel> list){
         super(context, R.layout.layout_messages);
         this.list = list;
+        this.msgType = "All";
     }
 
     public void insertItem(MessageModel p){
@@ -33,20 +35,46 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
     }
 
 
+
+
     @Override
     public MessageModel getItem(int position){
-        return list.get(position);
+        int i = 0;
+        for(MessageModel m : list) {
+            if(m.getMsgType().equals(msgType) || msgType.equals("All")) {
+                if(position == i) {
+                    return m;
+                }
+                i++;
+            }
+        }
+        return null;
+    }
+
+    public void setMsgType(String type){
+        this.msgType = type;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return list.size();
+
+        if(msgType.equals("All")) return list.size();
+
+        int count = 0;
+        for(MessageModel m : list){
+            if(m.getMsgType().equals(msgType))
+                count++;
+        }
+        return count;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        MessageModel location = list.get(position);
+        MessageModel message = getItem(position);
+
+
         ViewHolder holder;
 
         final View result;
@@ -55,7 +83,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
             holder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.layout_locations, parent, false);
+            view = inflater.inflate(R.layout.layout_messages, parent, false);
 
             holder.user = (TextView) view.findViewById(R.id.user);
             holder.subject = (TextView) view.findViewById(R.id.subject);
@@ -68,8 +96,8 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         }
 
         lastPosition = position;
-        holder.user.setText(location.getUser());
-        holder.subject.setText(location.getSubject());
+        holder.user.setText(message.getUser());
+        holder.subject.setText(message.getSubject());
 
         return result;
     }

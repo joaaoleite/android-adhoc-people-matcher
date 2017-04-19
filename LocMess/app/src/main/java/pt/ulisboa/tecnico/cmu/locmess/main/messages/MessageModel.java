@@ -17,13 +17,14 @@ public class MessageModel {
     private Calendar start;
     private Calendar end;
     private String content;
+    private String msgType;
 
 
 
     private boolean selected;
     public View view;
 
-    public MessageModel(String location, String user, String subject, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String content){
+    public MessageModel(String location, String user, String subject, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String content, String msgType){
         this.location = location;
         this.user = user;
         this.subject = subject;
@@ -32,6 +33,7 @@ public class MessageModel {
         this.start = start;
         this.end = end;
         this.content = content;
+        this.msgType = msgType;
 
         this.selected = false;
     }
@@ -67,6 +69,10 @@ public class MessageModel {
 
     public String getContent(){
         return this.content;
+    }
+
+    public String getMsgType(){
+        return this.msgType;
     }
 
     public void setLocation(String value){ this.location = value; }
