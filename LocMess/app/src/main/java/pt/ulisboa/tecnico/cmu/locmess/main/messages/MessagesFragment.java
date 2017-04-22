@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,6 +80,14 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
                 }
             });
         }
+
+        FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
+        myFab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(view.getContext(), MessageCreator.class);
+                startActivityForResult(intent,456);
+            }
+        });
 
         return view;
     }

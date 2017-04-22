@@ -41,7 +41,14 @@
             android:label="Message">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main.MainActivity"></meta-data>
+                android:value=".main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".main.messages.MessageCreator"
+            android:label="New Message">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.MainActivity" />
         </activity>
     </application>
 
