@@ -104,14 +104,14 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                 adapter.list.remove(i);
                 adapter.notifyDataSetChanged();
                 i--;
-                deleteKeyPairOnServer(location);
+                deleteLocationOnServer(location);
             }
         }
         selected=0;
         ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
     }
 
-    public void deleteKeyPairOnServer(LocationModel keypair){
+    public void deleteLocationOnServer(LocationModel location){
         // TODO: Server Requests
     }
 

@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
+import android.view.View;
+
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
@@ -14,7 +16,7 @@ import pt.ulisboa.tecnico.cmu.locmess.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Fragment fragment;
+    private static Fragment fragment;
     private Menu menu;
 
     public Menu getMenu() {
@@ -63,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         fragment = ProfileFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
 
     }
 

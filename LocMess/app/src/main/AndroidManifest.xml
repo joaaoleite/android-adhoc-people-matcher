@@ -38,12 +38,10 @@
 
         <activity
             android:name=".main.messages.MessageViewer"
-            android:label="@string/title_activity_message_viewer"
-            android:parentActivityName=".main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Message">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.cmu.locmess.main.MainActivity" />
+                android:value=".main.MainActivity"></meta-data>
         </activity>
     </application>
 
