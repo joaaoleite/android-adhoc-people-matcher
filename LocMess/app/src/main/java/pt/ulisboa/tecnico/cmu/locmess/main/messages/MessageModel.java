@@ -55,7 +55,7 @@ public class MessageModel {
         return this.policy;
     }
 
-    public ArrayList<PairModel> getfilter(){
+    public ArrayList<PairModel> getFilter(){
         return this.filter;
     }
 

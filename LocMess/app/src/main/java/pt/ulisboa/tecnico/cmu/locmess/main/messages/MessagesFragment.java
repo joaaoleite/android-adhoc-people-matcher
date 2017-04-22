@@ -87,10 +87,11 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         ArrayList<MessageModel> messages = new ArrayList<>();
         ArrayList<PairModel> pairs = new ArrayList<>();
         pairs.add(new PairModel("cor","vermelho"));
+        pairs.add(new PairModel("marca","nike"));
         Calendar calstart = Calendar.getInstance();
-        calstart.set(2017,3,29,20,10);
+        calstart.set(2017,0,2,20,10);
         Calendar calend = Calendar.getInstance();
-        calend.set(2017,3,29,20,50);
+        calend.set(2017,1,4,20,50);
         messages.add(new MessageModel("home","Xiago", "arrendar quarto", "Whitelist", pairs, calstart, calend, "ola tas bom", "Sent"));
         messages.add(new MessageModel("school","xeite", "estudar no cafe", "blacklist", pairs, calstart, calend, "bora estudar", "Received"));
         return messages;
@@ -131,14 +132,25 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         String subject = message.getSubject();
         String content = message.getContent();
         String msgType = message.getMsgType();
-
+        String location = message.getLocation();
+        String policy = message.getPolicy();
+        String filter = "";
+        for (int i = 0; i < message.getFilter().size(); i++){
+            filter = filter +"\n"+ message.getFilter().get(i).getKey()+ " - " + message.getFilter().get(i).getValue();
+        }
+        String date = message.getStart().getTime() + " to " + message.getEnd().getTime();
 
         Intent intent = new Intent(view.getContext(), MessageViewer.class);
-        intent.putExtra("Title", user);
-        intent.putExtra("Subject", subject);
-        intent.putExtra("Content", content);
-        intent.putExtra("position", position);
+        intent.putExtra("user", user);
+        intent.putExtra("subject", subject);
+        intent.putExtra("content", content);
         intent.putExtra("type", msgType);
+        intent.putExtra("location", location);
+        intent.putExtra("policy", policy);
+        intent.putExtra("filter", filter);
+        intent.putExtra("date", date);
+        intent.putExtra("position", position);
+
         startActivityForResult(intent,123);
     }
 

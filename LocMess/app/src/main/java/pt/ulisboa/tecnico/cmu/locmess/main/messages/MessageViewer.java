@@ -27,13 +27,21 @@ public class MessageViewer extends AppCompatActivity {
         TextView user = (TextView) findViewById(R.id.messageUser);
         TextView subject = (TextView) findViewById(R.id.messageSubject);
         TextView content = (TextView) findViewById(R.id.messageContent);
+        TextView location = (TextView) findViewById(R.id.messageLocation);
+        TextView policy = (TextView) findViewById(R.id.messagePolicy);
+        TextView filter = (TextView) findViewById(R.id.messageFilter);
+        TextView date = (TextView) findViewById(R.id.messageCalendar);
+
 
         Intent myIntent = getIntent();
-        user.setText("From: "+ myIntent.getStringExtra("Title"));
-        subject.setText("Subject: "+ myIntent.getStringExtra("Subject"));
-        content.setText(myIntent.getStringExtra("Content"));
+        user.setText("From: "+ myIntent.getStringExtra("user"));
+        subject.setText("Subject: "+ myIntent.getStringExtra("subject"));
+        content.setText("Message: " + myIntent.getStringExtra("content"));
         if(myIntent.getStringExtra("type").equals("Sent")){
-            Log.d("xona","xona");
+            location.setText("Location: " + myIntent.getStringExtra("location"));
+            policy.setText("Policy: " + myIntent.getStringExtra("policy"));
+            filter.setText("Filters: " + myIntent.getStringExtra("filter"));
+            date.setText("Date: " + myIntent.getStringExtra("date"));
         }
         this.position = myIntent.getIntExtra("position",-1);
     }
