@@ -5,10 +5,10 @@ import pt.ulisboa.tecnico.cmu.exceptions.ExpiredSessionException;
 import java.util.Map;
 import java.util.HashMap;
 import spark.QueryParamsMap;
-import spark.Session;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Date;
+import org.json.JSONObject;
 
 public class Routes{
     private HTTP http;
@@ -19,16 +19,7 @@ public class Routes{
 
     public void launch(){
 
-        http.GET("/test", (Map<String, String> params, Session session) -> {
-            try{
-                return Response.OK;
-            }
-            catch(Exception e){
-                return Response.ERROR;
-            }
-        });
-
-        http.POST("/signup", (QueryParamsMap params, Session session) -> {
+        http.POST("/signup", (QueryParamsMap params, String token) -> {
             try{
                 String username = params.value("username");
                 String password = params.value("password");
@@ -40,25 +31,20 @@ public class Routes{
             }
         });
 
-        http.POST("/login", (QueryParamsMap params, Session session) -> {
+        http.POST("/login", (QueryParamsMap params, String token) -> {
             try{
                 String username = params.value("username");
                 String password = params.value("password");
-                Database.Users().logIn(username, password);
-                session.attribute("username", username);
-                return Response.OK;
+                return Response.createJSON("token", Database.Users().logIn(username, password));
             }
             catch(Exception e){
                 return Response.ERROR;
             }
         });
 
-        http.POST("/logout", (QueryParamsMap params, Session session) -> {
+        http.POST("/logout", (QueryParamsMap params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    session.removeAttribute("username");
-                    return Response.OK;
-                }
+                if(Database.Users().verifyToken(token) != null) return Response.OK;
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -66,9 +52,9 @@ public class Routes{
             }
         });
 
-        http.GET("/locations", (Map<String, String> params, Session session) -> {
+        http.GET("/locations", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null)
+                if(Database.Users().verifyToken(token) != null)
                     return Database.Locations().ModelSetToJSON(Database.Locations().getLocations(), "locations");
                 else throw new ExpiredSessionException();
             }
@@ -77,10 +63,10 @@ public class Routes{
             }
         });
 
-        http.GET("/locations/:name", (Map<String, String> params, Session session) -> {
+        http.GET("/locations/:name", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null)
-                    return Database.Locations().getLocationByName(params.get(":name")).toJSON();
+                if(Database.Users().verifyToken(token) != null)
+                    return Response.setOK(Database.Locations().getLocationByName(params.get(":name")).toJSON());
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -88,9 +74,9 @@ public class Routes{
             }
         });
 
-        http.POST("/locations", (QueryParamsMap params, Session session) -> {
+        http.POST("/locations", (QueryParamsMap params, String token) -> {
             try{
-                if(session.attribute("username") != null){
+                if(Database.Users().verifyToken(token) != null){
                     String name = params.value("name");
                     if(!params.hasKey("ssid")){
                         double latitude = Double.parseDouble(params.value("latitude"));
@@ -111,10 +97,10 @@ public class Routes{
             }
         });
 
-        http.PUT("/locations/now", (QueryParamsMap params, Session session) -> {
+        http.PUT("/locations/now", (QueryParamsMap params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    String username = session.attribute("username");
+                String username = Database.Users().verifyToken(token);
+                if(username != null){
                     Double latitude = Double.parseDouble(params.value("latitude"));
                     Double longitude = Double.parseDouble(params.value("longitude"));
                     HashSet<String> ssids = new HashSet<String>();
@@ -124,7 +110,7 @@ public class Routes{
                         ssids.add(params.value(n_ssid));
                         n_ssid = "ssid" + ++i;
                     }
-                    return Database.Locations().setToJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids));
+                    return Database.Locations().setToJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
                 }
                 else throw new ExpiredSessionException();
             }
@@ -133,9 +119,9 @@ public class Routes{
             }
         });
 
-        http.DELETE("/locations/:name", (Map<String, String> params, Session session) -> {
+        http.DELETE("/locations/:name", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null){
+                if(Database.Users().verifyToken(token) != null){
                     Database.Locations().removeLocation(params.get(":name"));
                 }
                 else throw new ExpiredSessionException();
@@ -146,11 +132,10 @@ public class Routes{
             }
         });
 
-        http.GET("/keys", (Map<String, String> params, Session session) -> {
+        http.GET("/keys", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    return Database.Users().setToJSON(Database.Users().getGlobalKeys());
-                }
+                if(Database.Users().verifyToken(token) != null)
+                    return Database.Users().setToJSON(Database.Users().getGlobalKeys(), "keys");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -158,12 +143,10 @@ public class Routes{
             }
         });
 
-        http.GET("/profile", (Map<String, String> params, Session session) -> {
+        http.GET("/profile", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    String username = session.attribute("username");
-                    return Database.Users().mapToJSON(Database.Users().getUserKeys(username));
-                }
+                String username = Database.Users().verifyToken(token);
+                if(username != null) return Database.Users().mapToJSON(Database.Users().getUserKeys(username), "keys");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -171,10 +154,10 @@ public class Routes{
             }
         });
 
-        http.PUT("/profile", (QueryParamsMap params, Session session) -> {
+        http.PUT("/profile", (QueryParamsMap params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    String username = session.attribute("username");
+                String username = Database.Users().verifyToken(token);
+                if(username != null){
                     String key = params.value("key");
                     String value = params.value("value");
                     Database.Users().addKeyToUser(username, key, value);
@@ -187,12 +170,11 @@ public class Routes{
             }
         });
 
-        http.GET("/messages", (Map<String, String> params, Session session) -> {
+        http.GET("/messages", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    String username = session.attribute("username");
+                String username = Database.Users().verifyToken(token);
+                if(username != null)
                     return Database.Messages().ModelSetToJSON(Database.Messages().getMessagesByUser(username), "messages");
-                }
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -200,10 +182,10 @@ public class Routes{
             }
         });
 
-        http.POST("/messages", (QueryParamsMap params, Session session) -> {
+        http.POST("/messages", (QueryParamsMap params, String token) -> {
             try{
-                if(session.attribute("username") != null){
-                    String username = session.attribute("username");
+                String username = Database.Users().verifyToken(token);
+                if(username != null){
                     String location = params.value("location");
                     String policy = params.value("policy");
                     HashMap<String, String> keys = new HashMap<String, String>();
@@ -226,9 +208,9 @@ public class Routes{
             }
         });
 
-        http.DELETE("/messages/:id", (Map<String, String> params, Session session) -> {
+        http.DELETE("/messages/:id", (Map<String, String> params, String token) -> {
             try{
-                if(session.attribute("username") != null){
+                if(Database.Users().verifyToken(token) != null){
                     Database.Messages().removeMessage(params.get(":id"));
                 }
                 else throw new ExpiredSessionException();

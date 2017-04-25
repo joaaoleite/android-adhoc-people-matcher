@@ -6,8 +6,8 @@ import pt.ulisboa.tecnico.cmu.exceptions.UserNotFoundException;
 import pt.ulisboa.tecnico.cmu.exceptions.UserAlreadyExistsException;
 import pt.ulisboa.tecnico.cmu.exceptions.AuthenticationFailedException;
 import java.util.HashMap;
-import org.json.JSONObject;
 import java.util.HashSet;
+import java.util.Base64;
 
 public class Users extends Controller{
 
@@ -22,14 +22,28 @@ public class Users extends Controller{
         else super.put(username, new User(username, password));
     }
 
-    public void logIn(String username, String password) throws AuthenticationFailedException{
+    private boolean verifyAuthentication(String username, String password){
         try{
-            if(!this.getUserByUsername(username).getPassword().equals(password))
-                throw new AuthenticationFailedException(username);
+            if(this.getUserByUsername(username).getPassword().equals(password)) return true;
+            else return false;
         }
         catch(UserNotFoundException e){
-            throw new AuthenticationFailedException(username);
+            return false;
         }
+    }
+
+    public String verifyToken(String token){
+        String tokenStr = new String(Base64.getDecoder().decode(token));
+        String username = tokenStr.split(":")[0];
+        String password = tokenStr.split(":")[1];
+        if(verifyAuthentication(username, password)) return username;
+        else return null;
+    }
+
+    public String logIn(String username, String password) throws AuthenticationFailedException{
+        if(this.verifyAuthentication(username, password))
+            return Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        else throw new AuthenticationFailedException(username);
     }
 
     public HashSet<String> getGlobalKeys(){
