@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public abstract class Controller extends HashMap<String, Model>{
 
-    public static JSONObject ModelSetToJSON(HashSet<? extends Model> set, String arrayName){
+    public static JSONObject toJSON(HashSet<? extends Model> set, String arrayName){
         JSONObject obj = new JSONObject();
         JSONArray array = new JSONArray();
         for(Model item : set)
@@ -20,7 +20,7 @@ public abstract class Controller extends HashMap<String, Model>{
         return obj;
     }
 
-    public static JSONObject mapToJSON(HashMap<String, String> map, String objName){
+    public static JSONObject toJSON(HashMap<String, String> map, String objName){
         JSONObject obj = new JSONObject();
         JSONObject keysObj = new JSONObject();
         for(HashMap.Entry<String, String> entry : map.entrySet())
@@ -30,7 +30,7 @@ public abstract class Controller extends HashMap<String, Model>{
         return obj;
     }
 
-    public static JSONObject ComplexMapToJSON(HashMap<String, HashSet<String>> map, String arrayName){
+    public static JSONObject toJSONComplex(HashMap<String, HashSet<String>> map, String arrayName){
         JSONObject obj = new JSONObject();
         JSONObject keysObj = new JSONObject();
         for(HashMap.Entry<String, HashSet<String>> keys : map.entrySet()){
@@ -39,19 +39,6 @@ public abstract class Controller extends HashMap<String, Model>{
             keysObj.put(keys.getKey(), valuesArray);
         }
         obj.put(arrayName, keysObj);
-        obj.put("status", "ok");
-        return obj;
-    }
-
-    public static JSONObject setToJSON(HashSet<String> set, String arrayName){
-        JSONObject obj = new JSONObject();
-        JSONArray array = new JSONArray();
-        for(String item : set){
-            JSONObject ref = new JSONObject();
-		    ref.put(arrayName.substring(0, arrayName.length() - 1), item);
-            array.put(ref);
-		}
-        obj.put(arrayName, array);
         obj.put("status", "ok");
         return obj;
     }

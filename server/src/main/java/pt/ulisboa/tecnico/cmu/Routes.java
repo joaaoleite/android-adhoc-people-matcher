@@ -55,7 +55,7 @@ public class Routes{
         http.GET("/locations", (Map<String, String> params, String token) -> {
             try{
                 if(Database.Users().verifyToken(token) != null)
-                    return Database.Locations().ModelSetToJSON(Database.Locations().getLocations(), "locations");
+                    return Database.Locations().toJSON(Database.Locations().getLocations(), "locations");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -110,7 +110,7 @@ public class Routes{
                         ssids.add(params.value(n_ssid));
                         n_ssid = "ssid" + ++i;
                     }
-                    return Database.Locations().ModelSetToJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
+                    return Database.Locations().toJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
                 }
                 else throw new ExpiredSessionException();
             }
@@ -135,7 +135,7 @@ public class Routes{
         http.GET("/keys", (Map<String, String> params, String token) -> {
             try{
                 if(Database.Users().verifyToken(token) != null)
-                    return Database.Users().ComplexMapToJSON(Database.Users().getGlobalKeys(), "keys");
+                    return Database.Users().toJSONComplex(Database.Users().getGlobalKeys(), "keys");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -146,7 +146,7 @@ public class Routes{
         http.GET("/profile", (Map<String, String> params, String token) -> {
             try{
                 String username = Database.Users().verifyToken(token);
-                if(username != null) return Database.Users().mapToJSON(Database.Users().getUserKeys(username), "keys");
+                if(username != null) return Database.Users().toJSON(Database.Users().getUserKeys(username), "keys");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -174,7 +174,7 @@ public class Routes{
             try{
                 String username = Database.Users().verifyToken(token);
                 if(username != null)
-                    return Database.Messages().ModelSetToJSON(Database.Messages().getMessagesByUser(username), "messages");
+                    return Database.Messages().toJSON(Database.Messages().getMessagesByUser(username), "messages");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
