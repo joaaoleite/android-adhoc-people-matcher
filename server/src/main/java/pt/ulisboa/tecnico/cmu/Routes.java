@@ -18,6 +18,16 @@ public class Routes{
     }
 
     public void launch(){
+
+        http.GET("/test", (QueryParamsMap params, Session session) -> {
+            try{
+                return Response.OK;
+            }
+            catch(Exception e){
+                return Response.ERROR;
+            }
+        });
+
         http.POST("/signup", (QueryParamsMap params, Session session) -> {
             try{
                 String username = params.value("username");
