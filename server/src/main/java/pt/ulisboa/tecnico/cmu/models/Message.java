@@ -45,11 +45,11 @@ public class Message extends Model {
 		obj.put("user", this.user);
 		obj.put("policy", this.policy);
 
-		JSONArray array = new JSONArray();
+		JSONObject tags = new JSONObject();
 		for(HashMap.Entry<String, String> tag : this.tags.entrySet()){
-			array.put(new String[]{tag.getKey(), tag.getValue()});
+			tags.put(tag.getKey(), tag.getValue());
 		}
-		obj.put("tags", array);
+		obj.put("tags", tags);
 		obj.put("start", this.start);
 		obj.put("end", this.end);
 		obj.put("content", this.content);

@@ -46,10 +46,21 @@ public class Users extends Controller{
         else throw new AuthenticationFailedException(username);
     }
 
-    public HashSet<String> getGlobalKeys(){
-        HashSet<String> keys = new HashSet<String>();
+    public HashMap<String, HashSet<String>> getGlobalKeys(){
+        HashMap<String, HashSet<String>> keys = new HashMap<String, HashSet<String>>();
         for(HashMap.Entry<String, Model> user : this.entrySet()){
-            keys.addAll(((User) user.getValue()).getKeys().keySet());
+            for(HashMap.Entry<String, String> userKey : ((User) user.getValue()).getKeys().entrySet()){
+                if(!keys.containsKey(userKey.getKey())){
+                    HashSet<String> hash = new HashSet<String>();
+                    hash.add(userKey.getValue());
+                    keys.put(userKey.getKey(), hash);
+                }
+                else{
+                    HashSet<String> hash = keys.get(userKey.getValue());
+                    hash.add(userKey.getValue());
+                    keys.put(userKey.getKey(), hash);
+                }
+            }
         }
         return keys;
     }

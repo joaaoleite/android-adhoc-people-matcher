@@ -110,7 +110,7 @@ public class Routes{
                         ssids.add(params.value(n_ssid));
                         n_ssid = "ssid" + ++i;
                     }
-                    return Database.Locations().setToJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
+                    return Database.Locations().ModelSetToJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
                 }
                 else throw new ExpiredSessionException();
             }
@@ -135,7 +135,7 @@ public class Routes{
         http.GET("/keys", (Map<String, String> params, String token) -> {
             try{
                 if(Database.Users().verifyToken(token) != null)
-                    return Database.Users().setToJSON(Database.Users().getGlobalKeys(), "keys");
+                    return Database.Users().ComplexMapToJSON(Database.Users().getGlobalKeys(), "keys");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){

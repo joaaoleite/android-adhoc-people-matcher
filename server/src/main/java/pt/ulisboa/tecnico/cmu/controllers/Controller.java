@@ -20,15 +20,25 @@ public abstract class Controller extends HashMap<String, Model>{
         return obj;
     }
 
-    public static JSONObject mapToJSON(HashMap<String, String> map, String arrayName){
+    public static JSONObject mapToJSON(HashMap<String, String> map, String objName){
         JSONObject obj = new JSONObject();
-        JSONArray array = new JSONArray();
-        for(HashMap.Entry<String, String> entry : map.entrySet()){
-            JSONObject ref = new JSONObject();
-            ref.put(entry.getKey(), entry.getValue());
-			array.put(ref);
+        JSONObject keysObj = new JSONObject();
+        for(HashMap.Entry<String, String> entry : map.entrySet())
+            keysObj.put(entry.getKey(), entry.getValue());
+        obj.put(objName, keysObj);
+        obj.put("status", "ok");
+        return obj;
+    }
+
+    public static JSONObject ComplexMapToJSON(HashMap<String, HashSet<String>> map, String arrayName){
+        JSONObject obj = new JSONObject();
+        JSONObject keysObj = new JSONObject();
+        for(HashMap.Entry<String, HashSet<String>> keys : map.entrySet()){
+            JSONArray valuesArray = new JSONArray();
+            for(String value : keys.getValue()) valuesArray.put(value);
+            keysObj.put(keys.getKey(), valuesArray);
         }
-        obj.put(arrayName, array);
+        obj.put(arrayName, keysObj);
         obj.put("status", "ok");
         return obj;
     }
