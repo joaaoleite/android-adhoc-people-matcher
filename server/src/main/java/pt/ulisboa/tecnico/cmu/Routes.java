@@ -69,7 +69,7 @@ public class Routes{
         http.GET("/locations", (Map<String, String> params, Session session) -> {
             try{
                 if(session.attribute("username") != null)
-                    return Database.Locations().ModelSetToJSON(Database.Locations().getLocations());
+                    return Database.Locations().ModelSetToJSON(Database.Locations().getLocations(), "locations");
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
@@ -191,7 +191,7 @@ public class Routes{
             try{
                 if(session.attribute("username") != null){
                     String username = session.attribute("username");
-                    return Database.Messages().ModelSetToJSON(Database.Messages().getMessagesByUser(username));
+                    return Database.Messages().ModelSetToJSON(Database.Messages().getMessagesByUser(username), "messages");
                 }
                 else throw new ExpiredSessionException();
             }
