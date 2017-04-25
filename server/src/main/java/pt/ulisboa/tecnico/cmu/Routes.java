@@ -19,7 +19,7 @@ public class Routes{
 
     public void launch(){
 
-        http.GET("/test", (QueryParamsMap params, Session session) -> {
+        http.GET("/test", (Map<String, String> params, Session session) -> {
             try{
                 return Response.OK;
             }
