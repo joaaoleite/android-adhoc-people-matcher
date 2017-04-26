@@ -173,6 +173,21 @@ public class Routes{
             }
         });
 
+        http.DELETE("/profile/:name", (Map<String, String> params, String token) -> {
+            try{
+                String username = Database.Users().verifyToken(token);
+                if(username != null){
+                    Database.Users().removeKeyFromUser(username, params.get(":name"));
+                    return Response.OK;
+                }
+                else throw new ExpiredSessionException();
+
+            }
+            catch(Exception e){
+                return Response.ERROR;
+            }
+        });
+
         http.GET("/messages", (Map<String, String> params, String token) -> {
             try{
                 String username = Database.Users().verifyToken(token);

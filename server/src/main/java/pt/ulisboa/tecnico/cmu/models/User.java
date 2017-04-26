@@ -31,6 +31,10 @@ public class User extends Model{
 		this.keys.put(key, value);
 	}
 
+	public void removeKey(String key){
+		this.keys.remove(key);
+	}
+
 	public HashSet<String> getMessagesID(){
 		return this.messagesID;
 	}
