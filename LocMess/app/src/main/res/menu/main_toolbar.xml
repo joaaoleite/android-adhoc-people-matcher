@@ -17,8 +17,7 @@
     <item
         android:title="Logout"
         app:showAsAction="never"
-        android:onClick="logout"
-        android:visible="true"
         android:id="@+id/logout"
+        android:visible="false"
         android:icon="@drawable/ic_logout_24dp" />
 </menu>

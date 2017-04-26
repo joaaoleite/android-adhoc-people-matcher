@@ -15,13 +15,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
 
 
 public class MessagesFragment extends MyFragment implements AdapterView.OnItemClickListener{
@@ -35,8 +42,6 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public MessagesFragment() {
         // Required empty public constructor
     }
-
-
 
     public static MessagesFragment newInstance() {
         if(singleton==null) singleton = new MessagesFragment();
@@ -58,8 +63,6 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             this.view = inflater.inflate(R.layout.fragment_messages, container, false);
             this.list = (ListView) view.findViewById(R.id.list);
 
-
-            populate();
             adapter();
 
             final Spinner spinnerMsgType = (Spinner) view.findViewById(R.id.spinnerMessages);
@@ -92,24 +95,55 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         return view;
     }
 
-    public List<MessageModel> populate(){
-        ArrayList<MessageModel> messages = new ArrayList<>();
-        ArrayList<PairModel> pairs = new ArrayList<>();
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("marca","nike"));
-        Calendar calstart = Calendar.getInstance();
-        calstart.set(2017,0,2,20,10);
-        Calendar calend = Calendar.getInstance();
-        calend.set(2017,1,4,20,50);
-        messages.add(new MessageModel("home","Xiago", "arrendar quarto", "Whitelist", pairs, calstart, calend, "ola tas bom", "Sent"));
-        messages.add(new MessageModel("school","xeite", "estudar no cafe", "blacklist", pairs, calstart, calend, "bora estudar", "Received"));
-        return messages;
-    }
-
     public void adapter(){
-        adapter = new MessageAdapter(view.getContext(), this.populate());
+        adapter = new MessageAdapter(view.getContext(), new ArrayList<MessageModel>());
         list.setAdapter(adapter);
         list.setOnItemClickListener(this);
+
+        new Request("GET","/messages"){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException {
+                if(json.getString("status").equals("ok")){
+                    ArrayList<MessageModel> messagesList = new ArrayList<>();
+                    try {
+                        JSONArray messages = json.getJSONArray("messages");
+
+                        for (int i = 0; i < messages.length(); i++) {
+                            JSONObject msg = messages.getJSONObject(i);
+                            String location = msg.getString("location");
+                            String sender = msg.getString("user");
+                            String content = msg.getString("content");
+                            String policy = msg.getString("policy");
+                            String id = msg.getString("id");
+
+                            Calendar start = Calendar.getInstance();
+                            String[] s = msg.getString("start").split(" ");
+                            start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5]+"-"+s[1]+"-"+s[2]+" "+s[3]));
+                            Calendar end = Calendar.getInstance();
+                            String[] e = msg.getString("end").split(" ");
+                            end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5]+"-"+e[1]+"-"+e[2]+" "+e[3]));
+
+                            ArrayList<PairModel> pairs = new ArrayList<>();
+                            JSONObject tags = msg.getJSONObject("tags");
+                            for (int j = 0; j < tags.names().length(); j++)
+                                pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
+
+                            messagesList.add(new MessageModel(id,location, sender, content, policy, pairs, start, end, "Sent"));
+                        }
+                        adapter = new MessageAdapter(view.getContext(), messagesList);
+                        list.setAdapter(adapter);
+                    }
+                    catch (Exception e){
+                        Log.d("Messages","Error fetching messages!");
+                        Log.d("Messages","Error: "+e);
+                    }
+                }
+            }
+            @Override
+            public void onError(String error) {
+                Log.d("Messages","Error fetching messages!");
+            }
+        }.execute();
     }
 
     @Override
@@ -179,7 +213,16 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public void deleteClicked() { }
 
     public void deleteMessageOnServer(MessageModel message){
-        // TODO: Server Requests
+        new Request("DELETE","/messages/"+message.getId()){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException {
+
+            }
+            @Override
+            public void onError(String error) {
+
+            }
+        }.execute();
     }
 
     @Override

@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.main_toolbar, m);
             super.onCreateOptionsMenu(m);
             this.menu = m;
+            menu.getItem(2).setVisible(true);
         }
         return true;
     }
@@ -100,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.map:
                 ((LocationsFragment) fragment).MapClicked(item);
                 break;
-
+            case R.id.logout:
+                this.logout(item);
+                break;
         }
         return true;
     }

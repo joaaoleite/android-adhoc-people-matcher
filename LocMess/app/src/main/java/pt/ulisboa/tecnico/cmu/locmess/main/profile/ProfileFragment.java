@@ -131,7 +131,8 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                                     alertDialogAndroid.dismiss();
                                     if(json.getString("status").equals("ok")) {
                                         adapter.insertItem(keypair);
-                                        ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
+                                        if(((ListView)container.findViewById(R.id.list))!=null)
+                                            ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
                                     }
                                     else{
                                         ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
@@ -179,10 +180,7 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
             if(keypair.isSelected()) {
                 adapter.list.remove(i);
                 adapter.notifyDataSetChanged();
-                HashMap<String,String> params = new HashMap<>();
-                params.put("key",keypair.getKey());
-                params.put("value",keypair.getValue());
-                new Request("DELETE","/profile",params){
+                new Request("DELETE","/profile/"+keypair.getKey()){
                     @Override
                     public void onResponse(JSONObject json) throws JSONException{
 

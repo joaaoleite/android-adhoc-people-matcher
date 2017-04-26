@@ -15,7 +15,7 @@ import pt.ulisboa.tecnico.cmu.locmess.R;
 public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
     private static class ViewHolder {
-        TextView user;
+        TextView location;
         TextView subject;
     }
     private String msgType;
@@ -85,7 +85,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             view = inflater.inflate(R.layout.layout_messages, parent, false);
 
-            holder.user = (TextView) view.findViewById(R.id.user);
+            holder.location = (TextView) view.findViewById(R.id.location);
             holder.subject = (TextView) view.findViewById(R.id.subject);
 
             result = view;
@@ -96,7 +96,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         }
 
         lastPosition = position;
-        holder.user.setText(message.getUser());
+        holder.location.setText(message.getLocation());
         holder.subject.setText(message.getSubject());
 
         return result;
