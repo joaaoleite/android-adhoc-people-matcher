@@ -113,11 +113,12 @@ public class Routes{
                         ssids.add(params.value(n_ssid));
                         n_ssid = "ssid" + ++i;
                     }
-                    return Database.Locations().toJSON(Database.Locations().getLocationsNearBy(latitude, longitude, ssids), "locations");
+                    return Database.Locations().toJSON(Database.Messages().getMatches(username, latitude, longitude, ssids), "messages");
                 }
                 else throw new ExpiredSessionException();
             }
             catch(Exception e){
+                e.printStackTrace();
                 return Response.ERROR;
             }
         });

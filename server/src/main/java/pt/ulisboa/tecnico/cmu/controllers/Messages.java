@@ -57,4 +57,19 @@ public class Messages extends Controller{
         Database.Locations().removeMessageIDFromLocation(location, id);
         Database.Users().removeMessageIDFromUser(user, id);
     }
+
+    public HashSet<Message> getMatches(String username, double latitude, double longitude, HashSet<String> ssids)
+    throws MessageNotFoundException, UserNotFoundException, LocationNotFoundException{
+        HashSet<Message> res = new HashSet<Message>();
+        HashMap<String, String> userKeys = Database.Users().getUserKeys(username);
+        HashSet<String> locations = Database.Locations().getLocationsNameNearBy(latitude, longitude, ssids);
+        for(String location : locations){
+            HashSet<String> messageIDs = Database.Locations().getLocationMessagesID(location);
+            for(String id : messageIDs){
+                Message msg = this.getMessageByID(id);
+                if(msg.isNow() && msg.fitKeys(userKeys)) res.add(msg);
+            }
+        }
+        return res;
+    }
 }

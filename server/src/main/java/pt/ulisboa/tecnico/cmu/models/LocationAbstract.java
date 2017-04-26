@@ -13,6 +13,10 @@ public abstract class LocationAbstract extends Model {
 		this.messagesID = new HashSet<String>();
 	}
 
+	public String getName(){
+		return this.name;
+	}
+
 	public HashSet<String> getMessagesID(){
 		return this.messagesID;
 	}
