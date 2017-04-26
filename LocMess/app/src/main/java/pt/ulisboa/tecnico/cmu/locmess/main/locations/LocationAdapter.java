@@ -85,8 +85,8 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
         if(location.getSsid()==null) {
             String lat = location.getLatitude()+"";
             String lng = location.getLongitude()+"";
-            lat = lat.substring(0,7);
-            lng = lng.substring(0,7);
+            lat = lat.substring(0, 6);
+            lng = lng.substring(0, 6);
             holder.value.setText(lat + "\n" + lng);
         }
         else holder.value.setText(location.getSsid());
