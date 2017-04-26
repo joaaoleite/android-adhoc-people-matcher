@@ -73,6 +73,10 @@ public class Users extends Controller{
         this.getUserByUsername(username).addKey(key, value);
     }
 
+    public void removeKeyFromUser(String username, String key) throws UserNotFoundException{
+        this.getUserByUsername(username).removeKey(key);
+    }
+
     public HashSet<String> getUserMessagesID(String username) throws UserNotFoundException{
         return this.getUserByUsername(username).getMessagesID();
     }
