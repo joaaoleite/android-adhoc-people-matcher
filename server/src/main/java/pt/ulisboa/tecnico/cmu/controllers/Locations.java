@@ -52,9 +52,9 @@ public class Locations extends Controller{
         else super.put(name, new LocationGPS(name, latitude, longitude, radius));
     }
 
-    public void createLocation(String name, String ssid) throws LocationAlreadyExistsException{
+    public void createLocation(String name, String ssid, String mac) throws LocationAlreadyExistsException{
         if(super.get(name) != null) throw new LocationAlreadyExistsException(name);
-        else super.put(name, new LocationSSID(name, ssid));
+        else super.put(name, new LocationSSID(name, ssid, mac));
     }
 
     public void removeLocation(String name) throws LocationNotFoundException{
