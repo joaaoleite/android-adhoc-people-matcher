@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.cmu.exceptions.AuthenticationFailedException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Base64;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Users extends Controller{
 
@@ -46,8 +47,8 @@ public class Users extends Controller{
         else throw new AuthenticationFailedException(username);
     }
 
-    public HashMap<String, HashSet<String>> getGlobalKeys(){
-        HashMap<String, HashSet<String>> keys = new HashMap<String, HashSet<String>>();
+    public ConcurrentHashMap<String, HashSet<String>> getGlobalKeys(){
+        ConcurrentHashMap<String, HashSet<String>> keys = new ConcurrentHashMap<String, HashSet<String>>();
         for(HashMap.Entry<String, Model> user : this.entrySet()){
             for(HashMap.Entry<String, String> userKey : ((User) user.getValue()).getKeys().entrySet()){
                 if(!keys.containsKey(userKey.getKey())){
@@ -65,7 +66,7 @@ public class Users extends Controller{
         return keys;
     }
 
-    public HashMap<String, String> getUserKeys(String username) throws UserNotFoundException{
+    public ConcurrentHashMap<String, String> getUserKeys(String username) throws UserNotFoundException{
         return this.getUserByUsername(username).getKeys();
     }
 

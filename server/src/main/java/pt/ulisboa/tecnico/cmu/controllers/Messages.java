@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.security.SecureRandom;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Messages extends Controller{
 
@@ -61,7 +62,7 @@ public class Messages extends Controller{
     public HashSet<Message> getMatches(String username, double latitude, double longitude, HashSet<String> ssids)
     throws MessageNotFoundException, UserNotFoundException, LocationNotFoundException{
         HashSet<Message> res = new HashSet<Message>();
-        HashMap<String, String> userKeys = Database.Users().getUserKeys(username);
+        ConcurrentHashMap<String, String> userKeys = Database.Users().getUserKeys(username);
         HashSet<String> locations = Database.Locations().getLocationsNameNearBy(latitude, longitude, ssids);
         for(String location : locations){
             HashSet<String> messageIDs = Database.Locations().getLocationMessagesID(location);
