@@ -34,14 +34,14 @@ public class Locations extends Controller{
         return ssids.contains(loc.getSSID());
     }
 
-    public HashSet<LocationAbstract> getLocationsNearBy(double latitude, double longitude, HashSet<String> ssids){
-        HashSet<LocationAbstract> res = new HashSet<LocationAbstract>();
+    public HashSet<String> getLocationsNameNearBy(double latitude, double longitude, HashSet<String> ssids){
+        HashSet<String> res = new HashSet<String>();
         for(HashMap.Entry<String, Model> entry : this.entrySet()){
             if(entry.getValue() instanceof LocationGPS){
-                if(checkGPS((LocationGPS) entry.getValue(), latitude, longitude)) res.add((LocationGPS) entry.getValue());
+                if(checkGPS((LocationGPS) entry.getValue(), latitude, longitude)) res.add(((LocationGPS) entry.getValue()).getName());
             }
             else if(entry.getValue() instanceof LocationSSID){
-                if(checkSSID((LocationSSID) entry.getValue(), ssids)) res.add((LocationSSID) entry.getValue());
+                if(checkSSID((LocationSSID) entry.getValue(), ssids)) res.add(((LocationSSID) entry.getValue()).getName());
             }
         }
         return res;
