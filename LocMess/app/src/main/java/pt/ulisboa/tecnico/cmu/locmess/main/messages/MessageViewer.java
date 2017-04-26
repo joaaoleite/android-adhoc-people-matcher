@@ -31,18 +31,19 @@ public class MessageViewer extends AppCompatActivity {
         TextView location = (TextView) findViewById(R.id.messageLocation);
         TextView policy = (TextView) findViewById(R.id.messagePolicy);
         TextView filter = (TextView) findViewById(R.id.messageFilter);
-        TextView date = (TextView) findViewById(R.id.messageCalendar);
-
+        TextView start = (TextView) findViewById(R.id.messageStart);
+        TextView end = (TextView) findViewById(R.id.messageEnd);
 
         Intent myIntent = getIntent();
-        user.setText("From: "+ myIntent.getStringExtra("user"));
-        subject.setText("Subject: "+ myIntent.getStringExtra("subject"));
-        content.setText("Message: " + myIntent.getStringExtra("content"));
+        user.setText(myIntent.getStringExtra("user"));
+        subject.setText(myIntent.getStringExtra("subject"));
+        content.setText(myIntent.getStringExtra("content"));
         if(myIntent.getStringExtra("type").equals("Sent")){
-            location.setText("Location: " + myIntent.getStringExtra("location"));
-            policy.setText("Policy: " + myIntent.getStringExtra("policy"));
-            filter.setText("Filters: " + myIntent.getStringExtra("filter"));
-            date.setText("Date: " + myIntent.getStringExtra("date"));
+            location.setText(myIntent.getStringExtra("location"));
+            policy.setText(myIntent.getStringExtra("policy"));
+            filter.setText(myIntent.getStringExtra("filter"));
+            start.setText(myIntent.getStringExtra("start"));
+            end.setText(myIntent.getStringExtra("end"));
         }
         this.position = myIntent.getIntExtra("position",-1);
     }

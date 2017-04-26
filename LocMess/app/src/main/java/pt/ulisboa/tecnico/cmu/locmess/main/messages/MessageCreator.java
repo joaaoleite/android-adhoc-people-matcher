@@ -42,7 +42,9 @@ public class MessageCreator extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                save();
+                getIntent().putExtra("creator", false);
+                setResult(RESULT_OK, getIntent());
+                finish();
                 break;
         }
         return true;
@@ -58,15 +60,13 @@ public class MessageCreator extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            save();
+            getIntent().putExtra("creator", false);
+            setResult(RESULT_OK, getIntent());
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
-
-
 
 
 }

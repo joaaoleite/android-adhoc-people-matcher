@@ -132,9 +132,9 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     private boolean restoreState(Bundle state){
         if(state==null) return false;
         Log.d("list_sub","restoreState: "+state);
-        getActivity().getSupportFragmentManager().getFragment(state, "list_sub");
-        ListView list = (ListView) view.findViewById(R.id.locationslist);
-        list.onRestoreInstanceState(state.getParcelable("listview"));
+        //getActivity().getSupportFragmentManager().getFragment(state, "list_sub");
+        //ListView list = (ListView) view.findViewById(R.id.locationslist);
+        //list.onRestoreInstanceState(state.getParcelable("listview"));
         return true;
     }
 
@@ -178,7 +178,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
         final EditText etInputName = (EditText) mView.findViewById(R.id.inputName);
 
         ArrayAdapter<CharSequence> ssids_adapter = new ArrayAdapter<CharSequence>
-                (view.getContext(), android.R.layout.simple_spinner_item,ssids);
+                (view.getContext(), R.layout.spinner_wifi_item,ssids);
         spinnerSelectWifi.setAdapter(ssids_adapter);
 
         alertDialogBuilderUserInput

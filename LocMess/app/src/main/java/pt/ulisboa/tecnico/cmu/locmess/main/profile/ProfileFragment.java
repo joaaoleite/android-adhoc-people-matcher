@@ -200,7 +200,8 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     public void onDetach() {
         super.onDetach();
         adapter.deselectAllItems();
-        ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(false);
+        if(((MainActivity)getActivity()).getMenu()!=null)
+            ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(false);
     }
 
     private List<PairModel> populate(){
@@ -208,6 +209,27 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
         pairs.add(new PairModel("restaurante","capitanga"));
         pairs.add(new PairModel("clube","benfica"));
         pairs.add(new PairModel("cor","vermelho"));
+        pairs.add(new PairModel("caralho","fodase"));
+        pairs.add(new PairModel("merda","caralho"));
+        pairs.add(new PairModel("fodase","merda"));
+        pairs.add(new PairModel("restaurante2","capitanga"));
+        pairs.add(new PairModel("club2e","benfica"));
+        pairs.add(new PairModel("c2or","vermelho"));
+        pairs.add(new PairModel("c22aralho","fodase"));
+        pairs.add(new PairModel("mer2da","caralho"));
+        pairs.add(new PairModel("fod2ase","merda"));
+        pairs.add(new PairModel("res3taurante","capitanga"));
+        pairs.add(new PairModel("clu3be","benfica"));
+        pairs.add(new PairModel("co3r","vermelho"));
+        pairs.add(new PairModel("ca3ralho","fodase"));
+        pairs.add(new PairModel("me3rda","caralho"));
+        pairs.add(new PairModel("fo3dase","merda"));
+        pairs.add(new PairModel("re3staurante2","capitanga"));
+        pairs.add(new PairModel("cl3ub2e","benfica"));
+        pairs.add(new PairModel("c23or","vermelho"));
+        pairs.add(new PairModel("c22a3ralho","fodase"));
+        pairs.add(new PairModel("mer23da","caralho"));
+        pairs.add(new PairModel("fod32ase","merda"));
         return pairs;
     }
     private void adapter(){
@@ -216,11 +238,11 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
         list.setAdapter(adapter);
     }
 
+
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View item, int position, long id) {
         Log.d("profile","onItemLongClick");
         PairModel pair = adapter.getItem(position);
-        pair.view = item;
         if(!pair.isSelected()) {
             item.setSelected(pair.toogle());
             selected++;

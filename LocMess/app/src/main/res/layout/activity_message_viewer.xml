@@ -11,51 +11,214 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/messageUser"
-            android:layout_width="match_parent"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/messageSubject"
-            android:textSize="16sp"
-            android:textStyle="bold"
+        <LinearLayout
+            android:paddingTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:orientation="horizontal"
+            android:weightSum="1">
+            
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="From:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="0.7"
+                android:id="@+id/messageUser"
+                android:layout_width="0dp"
+                android:textSize="16sp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="Subject:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="0.7"
+                android:id="@+id/messageSubject"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="Start:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="0.7"
+                android:id="@+id/messageStart"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:paddingTop="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="End:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="0.7"
+                android:id="@+id/messageEnd"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="Location:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="0.7"
+                android:layout_width="0dp"
+                android:id="@+id/messageLocation"
+                android:textSize="16sp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:paddingTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <TextView
-            android:id="@+id/messageContent"
+            android:layout_weight="0.3"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:text="Policy:"
             android:textSize="16sp"
-            android:layout_width="match_parent"
+            android:paddingEnd="10dp"
+            android:textAlignment="textEnd"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/messageLocation"
-            android:textSize="16sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
+            android:layout_weight="0.7"
+            android:layout_width="0dp"
             android:id="@+id/messagePolicy"
             android:textSize="16sp"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/messageFilter"
-            android:textSize="16sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/messageCalendar"
-            android:textSize="16sp"
+        <LinearLayout
+            android:paddingTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:text="Filters:"
+                android:textSize="16sp"
+                android:paddingEnd="10dp"
+                android:textAlignment="textEnd"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/messageFilter"
+                android:textSize="16sp"
+                android:layout_weight="0.3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:textStyle="bold"
+                android:text="Content"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:layout_height="wrap_content" />
+            <View
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+            <TextView
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:id="@+id/messageContent"
+                android:textSize="16sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
 

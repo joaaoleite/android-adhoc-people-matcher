@@ -45,7 +45,8 @@ public class LocationsFragment extends MyFragment {
         if(fragment==null)
             fragment = ListSubFragment.newInstance();
 
-        ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(true);
+        if(((MainActivity)getActivity()).getMenu()!=null)
+            ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(true);
 
         getChildFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
         return view;
@@ -69,6 +70,7 @@ public class LocationsFragment extends MyFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(false);
+        if(((MainActivity)getActivity()).getMenu()!=null)
+            ((MainActivity)getActivity()).getMenu().getItem(1).setVisible(false);
     }
 }

@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -57,34 +59,29 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
 
         PairModel pair = getItem(position);
 
-        ViewHolder holder;
-
-        final View result;
-
-        if (view == null) {
-
-            holder = new ViewHolder();
+        if(view == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             view = inflater.inflate(R.layout.layout_pair, parent, false);
-
-            holder.key = (TextView) view.findViewById(R.id.key);
-            holder.value = (TextView) view.findViewById(R.id.value);
-
-            result = view;
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) view.getTag();
-            result = view;
         }
 
-        lastPosition = position;
-        holder.key.setText(pair.getKey());
-        holder.value.setText(pair.getValue());
+        TextView key = (TextView) view.findViewById(R.id.key);
+        TextView value = (TextView) view.findViewById(R.id.value);
 
-        return result;
+        key.setText(pair.getKey());
+        value.setText(pair.getValue());
+
+        final View v = view;
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                v.setSelected(getItem(position).isSelected());
+            }
+        });
+
+        return view;
     }
 }

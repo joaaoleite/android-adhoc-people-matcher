@@ -22,6 +22,10 @@
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:transcriptMode="normal"
+                android:scrollingCache="false"
+                android:persistentDrawingCache="scrolling"
+                android:fastScrollEnabled="true"
+                android:cacheColorHint="@android:color/transparent"
                 android:descendantFocusability="blocksDescendants"
                 android:layout_height="wrap_content" />
 

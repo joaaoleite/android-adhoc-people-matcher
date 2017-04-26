@@ -85,7 +85,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(view.getContext(), MessageCreator.class);
-                startActivityForResult(intent,456);
+                startActivityForResult(intent,2);
             }
         });
 
@@ -122,14 +122,20 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("profile", "delete1");
         super.onActivityResult(requestCode, resultCode, data);
-        Boolean delete = data.getExtras().getBoolean("delete");
-        if (delete && requestCode==123) {
-            Log.d("profile", "delete");
-            int position = data.getExtras().getInt("position");
-            MessageModel message = adapter.getItem(position);
-            adapter.list.remove(position);
-            adapter.notifyDataSetChanged();
-            deleteMessageOnServer(message);
+        if(data!=null) {
+            Boolean delete = data.getExtras().getBoolean("delete");
+            Boolean creator = data.getExtras().getBoolean("creator");
+            if (delete && requestCode == 1) {
+                Log.d("Messages", "delete");
+                int position = data.getExtras().getInt("position");
+                MessageModel message = adapter.getItem(position);
+                adapter.list.remove(position);
+                adapter.notifyDataSetChanged();
+                deleteMessageOnServer(message);
+            }
+            if (creator && requestCode == 2) {
+                Log.d("Messages", "create");
+            }
         }
     }
 
@@ -145,9 +151,14 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         String policy = message.getPolicy();
         String filter = "";
         for (int i = 0; i < message.getFilter().size(); i++){
-            filter = filter +"\n"+ message.getFilter().get(i).getKey()+ " - " + message.getFilter().get(i).getValue();
+            filter = filter + message.getFilter().get(i).getKey()+ " - " + message.getFilter().get(i).getValue() + "\n";
         }
-        String date = message.getStart().getTime() + " to " + message.getEnd().getTime();
+
+        String start = message.getEnd().getTime()+"";
+        String end = message.getEnd().getTime()+"";
+
+        start = start.split(" ")[1]+" "+start.split(" ")[2]+" "+start.split(" ")[5]+" at "+start.split(" ")[3].split(":")[0]+":"+start.split(" ")[3].split(":")[1];
+        end = end.split(" ")[1]+" "+end.split(" ")[2]+" "+end.split(" ")[5]+" at "+end.split(" ")[3].split(":")[0]+":"+end.split(" ")[3].split(":")[1];
 
         Intent intent = new Intent(view.getContext(), MessageViewer.class);
         intent.putExtra("user", user);
@@ -157,10 +168,11 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         intent.putExtra("location", location);
         intent.putExtra("policy", policy);
         intent.putExtra("filter", filter);
-        intent.putExtra("date", date);
+        intent.putExtra("start", start);
+        intent.putExtra("end", end);
         intent.putExtra("position", position);
 
-        startActivityForResult(intent,123);
+        startActivityForResult(intent,1);
     }
 
     @Override

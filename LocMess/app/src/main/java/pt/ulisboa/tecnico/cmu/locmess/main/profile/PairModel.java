@@ -7,7 +7,6 @@ public class PairModel {
     private String key;
     private String value;
     private boolean selected;
-    public View view;
 
     public PairModel(String key, String value){
         this.key = key;

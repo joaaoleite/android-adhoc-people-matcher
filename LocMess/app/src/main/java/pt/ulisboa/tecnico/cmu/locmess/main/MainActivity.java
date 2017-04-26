@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.cmu.locmess.main;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
@@ -48,10 +50,12 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_toolbar, menu);
-        super.onCreateOptionsMenu(menu);
-        this.menu = menu;
+    public boolean onCreateOptionsMenu(Menu m) {
+        if(this.menu==null) {
+            getMenuInflater().inflate(R.menu.main_toolbar, m);
+            super.onCreateOptionsMenu(m);
+            this.menu = m;
+        }
         return true;
     }
 
@@ -65,8 +69,14 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         fragment = ProfileFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment,"current").commit();
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override

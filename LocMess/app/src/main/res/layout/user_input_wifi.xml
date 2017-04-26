@@ -20,6 +20,7 @@
         android:textColor="@color/red"/>
 
     <Spinner
+        android:layout_marginBottom="10dp"
         android:id="@+id/spinnerWifi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
