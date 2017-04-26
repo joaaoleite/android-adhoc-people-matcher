@@ -23,6 +23,7 @@ public class Routes{
             try{
                 String username = params.value("username");
                 String password = params.value("password");
+                if(username == null || password == null) return Response.ERROR;
                 Database.Users().createUser(username, password);
                 return Response.OK;
             }
@@ -35,6 +36,7 @@ public class Routes{
             try{
                 String username = params.value("username");
                 String password = params.value("password");
+                if(username == null || password == null) return Response.ERROR;
                 return Response.createJSON("token", Database.Users().logIn(username, password));
             }
             catch(Exception e){
@@ -160,6 +162,7 @@ public class Routes{
                 if(username != null){
                     String key = params.value("key");
                     String value = params.value("value");
+                    if(key == null || value == null) return Response.ERROR;
                     Database.Users().addKeyToUser(username, key, value);
                     return Response.OK;
                 }
@@ -198,6 +201,8 @@ public class Routes{
                     Date start = new Date(Long.parseLong(params.value("start")));
                     Date end = new Date(Long.parseLong(params.value("end")));
                     String content = params.value("content");
+                    if(username == null || location == null || policy == null ||
+                       keys == null || start == null || end == null || content == null) return Response.ERROR;
                     Database.Messages().addMessage(username, location, policy, keys, start, end, content);
                     return Response.OK;
                 }
