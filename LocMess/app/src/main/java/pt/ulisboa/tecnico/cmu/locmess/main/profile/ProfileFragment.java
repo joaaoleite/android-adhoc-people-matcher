@@ -38,6 +38,8 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     private ListView list;
     private PairAdapter adapter;
 
+    private HashMap<String,String[]> autocomplete = new HashMap<>();
+
 
     public ProfileFragment() {
     }
@@ -61,6 +63,7 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
             final Fragment f = this;
             restoreState(state);
             adapter();
+            getServerKeysAutoComplete();
 
             FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
             myFab.setOnClickListener(new View.OnClickListener() {
@@ -154,11 +157,31 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     }
 
     public String[] getServerKeysAutoComplete(){
-        return new String[]{"clube","cor","restaurante"};
+
+        new Request("GET","/keys"){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException {
+                JSONObject keys = json.getJSONObject("keys");
+                for(int i=0; i<keys.names().length(); i++){
+                    String key = keys.names().getString(i);
+                    JSONArray values = keys.getJSONArray(keys.names().getString(i));
+                    String[] array = new String[values.length()];
+                    for(int j=0; j<values.length(); j++){
+                        array[j] = values.getString(j);
+                    }
+                    autocomplete.put(key,array);
+                }
+            }
+            @Override
+            public void onError(String error) {}
+        }.execute();
+        return autocomplete.keySet().toArray(new String[0]);
     }
 
     public String[] getServerValuesAutoComplete(String key){
-        return new String[]{"cvermelho","cazul","camarelo", "cona", "calhalho", "caralaocive", "caefac", "cafevrg", "caioevni","camelo","cacieoinap","cabuba"};
+        if(autocomplete.get(key)!=null)
+            return autocomplete.get(key);
+        else return new String[]{};
     }
 
     public boolean isTextValid(String text){
@@ -183,11 +206,9 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                 new Request("DELETE","/profile/"+keypair.getKey()){
                     @Override
                     public void onResponse(JSONObject json) throws JSONException{
-
                     }
                     @Override
                     public void onError(String msg){
-
                     }
                 }.execute();
                 i--;

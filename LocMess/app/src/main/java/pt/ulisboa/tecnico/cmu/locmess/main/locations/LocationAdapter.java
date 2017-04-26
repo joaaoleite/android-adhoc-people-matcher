@@ -82,10 +82,14 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
         lastPosition = position;
         holder.type.setText(location.getType());
         holder.name.setText(location.getName());
-        if(location.getSsid()==null)
-            holder.value.setText(location.getLatitude()+","+location.getLongitude());
-        else
-            holder.value.setText(location.getSsid());
+        if(location.getSsid()==null) {
+            String lat = location.getLatitude()+"";
+            String lng = location.getLongitude()+"";
+            lat = lat.substring(0,7);
+            lng = lng.substring(0,7);
+            holder.value.setText(lat + "\n" + lng);
+        }
+        else holder.value.setText(location.getSsid());
 
 
         return result;
