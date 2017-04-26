@@ -88,7 +88,8 @@ public class Routes{
                     }
                     else{
                         String ssid = params.value("ssid");
-                        Database.Locations().createLocation(name, ssid);
+                        String mac = params.value("mac");
+                        Database.Locations().createLocation(name, ssid, mac);
                     }
                 }
                 else throw new ExpiredSessionException();
