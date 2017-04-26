@@ -53,6 +53,8 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     public static LocationAdapter adapter;
     private ProgressDialog dialog;
     private ViewGroup container;
+    private HashMap<String,String> macs = new HashMap<>();
+    private BroadcastReceiver receiver;
 
 
     public ListSubFragment() {
@@ -76,7 +78,6 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
             this.list = (ListView) view.findViewById(R.id.locationslist);
             this.container = container;
             restoreState(state);
-            populate();
             adapter();
 
             FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -91,7 +92,6 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     }
 
     public void getSSIDs(){
-        final String[] ssids = new String[]{"tagus","bar","restaurante"};
 
         Log.d("Wifi","getSSIDs");
 
@@ -108,19 +108,23 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                 wifi.setWifiEnabled(true);
             }
 
-            getActivity().registerReceiver(new BroadcastReceiver() {
+            receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context c, Intent intent) {
                     List<ScanResult> results = wifi.getScanResults();
                     int size = results.size();
                     ArrayList<String> ssids = new ArrayList<String>();
                     for (int i = 0; i < size; i++) {
-                        if(!ssids.contains(results.get(i).SSID))
+                        if(!ssids.contains(results.get(i).SSID)) {
                             ssids.add(results.get(i).SSID);
+                            macs.put(results.get(i).SSID,results.get(i).BSSID);
+                        }
                     }
                     showSSIDDialog(ssids.toArray(new String[0]));
                 }
-            }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            };
+
+            getActivity().registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
             wifi.startScan();
         }
@@ -134,18 +138,9 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
         }
     }
 
-    public String getMac(String ssid){
-        return "3x4mpl3";
-    }
-
     public boolean isTextValid(String text){
         String pattern= "^[a-zA-Z0-9 ]+$";
         return text.matches(pattern);
-    }
-
-
-    public void postKeyPairToServer(LocationModel keypair){
-        // TODO: Server Requests
     }
 
     public void deleteClicked() {
@@ -205,12 +200,6 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
         super.onDetach();
     }
 
-    private List<LocationModel> populate(){
-        ArrayList<LocationModel> locations = new ArrayList<>();
-        locations.add(new LocationModel("xenico", "eduroam","mac4dd1"));
-        locations.add(new LocationModel("home", 16.213123, 13.54632, 5));
-        return locations;
-    }
     private void adapter(){
         list.setOnItemLongClickListener(this);
         adapter = new LocationAdapter(view.getContext(), new ArrayList<LocationModel>());
@@ -257,6 +246,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     }
 
     private void showSSIDDialog(String[] ssids){
+        getActivity().unregisterReceiver(receiver);
         loadingDialog(false);
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this.getContext());
         final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_wifi, container, false);
@@ -292,7 +282,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
 
                 String ssid = spinnerSelectWifi.getSelectedItem().toString();
                 String name = etInputName.getText().toString().toLowerCase();
-                String mac = getMac(ssid);
+                String mac = macs.get(ssid);
 
                 if (!isTextValid(name)){
                     TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
