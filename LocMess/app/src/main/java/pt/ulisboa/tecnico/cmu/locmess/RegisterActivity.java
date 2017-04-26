@@ -15,6 +15,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etUsername;
@@ -67,24 +76,34 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         loadingDialog("Please wait...");
-        registerOnServer();
+        registerOnServer(etUsername.getText().toString(),etPassword.getText().toString());
 
 
     }
 
-    private void registerOnServer(){
+    private void registerOnServer(String username, String password){
 
-        // TODO: API Requests
-        new android.os.Handler().postDelayed(
-            new Runnable() {
-                public void run() {
-                    success = true;
+        HashMap<String,String> params = new HashMap<>();
+        params.put("username",username);
+        params.put("password",password);
+        new Request("POST","/signup",params){
+            @Override
+            public void onResponse(JSONObject obj) throws JSONException{
+                if(obj.getString("status").equals("ok")){
                     loadingDialog(false);
-                    if(success) dialogAlert("Register successful!");
-                    else dialogAlert("Error registering!");
+                    dialogAlert("Register successful!");
                 }
-            },
-         1000);
+                else{
+                    loadingDialog(false);
+                    dialogAlert("Error registering!");
+                }
+            }
+            @Override
+            public void onError(String msg){
+                loadingDialog(false);
+                dialogAlert("Error registering!");
+            }
+        }.execute();
     }
 
     private void dialogAlert(String message){

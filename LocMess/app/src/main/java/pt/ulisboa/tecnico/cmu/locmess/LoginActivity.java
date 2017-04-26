@@ -7,12 +7,20 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -21,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog dialog;
     private Boolean success = false;
     private static LoginActivity singleton;
+    private Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +41,13 @@ public class LoginActivity extends AppCompatActivity {
         etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
 
+        this.session = Session.getInstance(this);
+
+        if(session.isLoggedIn()) {
+            Intent intent = new Intent(singleton, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     public void login(View view){
@@ -57,21 +73,45 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void loginOnServer(String username, String password){
-        // TODO: API Requests
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        success = true;
+
+        Log.d("Session", "Login...");
+
+        Log.d("Session", "username: "+username);
+        Log.d("Session", "password: "+password);
+
+        HashMap<String,String> params = new HashMap<>();
+        params.put("username",username);
+        params.put("password",password);
+
+        new Request("POST","/login",params){
+            public void onResponse(JSONObject res){
+                try{
+                    String token = res.getString("token");
+                    Session.getInstance().token(token);
+                    if(token!=null) {
                         loadingDialog(false);
-                        if(success) {
-                            Intent intent = new Intent(singleton, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                        else dialogAlert("Error logging in!");
+                        Intent intent = new Intent(singleton, MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
-                },
-                1000);
+                    else{
+                        Session.getInstance().logout();
+                        dialogAlert("Error logging in!");
+                    }
+
+                }catch(JSONException e){
+                    Session.getInstance().logout();
+                    dialogAlert("Error logging in!");
+                }
+                loadingDialog(false);
+            }
+            public void onError(String error){
+                Session.getInstance().logout();
+                dialogAlert("Error logging in!");
+                loadingDialog(false);
+            }
+        }.execute();
+
     }
 
     public void register(View view){

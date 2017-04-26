@@ -81,29 +81,6 @@ public class Session {
 
     // --------------------------------------------
 
-    public void login(String username, String password){
-
-        Log.d("Session", "Login...");
-
-        HashMap<String,String> params = new HashMap<>();
-        params.put("username",username);
-        params.put("password",password);
-
-        new Request("POST","/login",params){
-            public void onResponse(JSONObject res){
-                try{
-                    String token = res.getString("token");
-                    instance.token(token);
-                }catch(JSONException e){
-                    instance.logout();
-                }
-            }
-            public void onError(String error){
-                instance.logout();
-            }
-        }.execute();
-    }
-
     public void logout(){
         SharedPreferences.Editor editor = editor();
         editor.clear();

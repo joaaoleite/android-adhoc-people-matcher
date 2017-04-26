@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -11,10 +12,12 @@ import android.view.MenuItem;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import pt.ulisboa.tecnico.cmu.locmess.LoginActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    public void logout(MenuItem item){
+        Session.getInstance().logout();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

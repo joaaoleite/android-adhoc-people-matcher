@@ -13,4 +13,12 @@
         app:showAsAction="always"
         android:id="@+id/map"
         android:icon="@drawable/ic_satellite_black_24dp" />
+
+    <item
+        android:title="Logout"
+        app:showAsAction="never"
+        android:onClick="logout"
+        android:visible="true"
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_logout_24dp" />
 </menu>
