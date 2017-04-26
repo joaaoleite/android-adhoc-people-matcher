@@ -16,6 +16,7 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
     private static class ViewHolder {
         TextView type;
         TextView name;
+        TextView value;
     }
     private int lastPosition = -1;
     public List<LocationModel> list;
@@ -69,6 +70,7 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
 
             holder.type = (TextView) view.findViewById(R.id.type);
             holder.name = (TextView) view.findViewById(R.id.name);
+            holder.value = (TextView) view.findViewById(R.id.value);
 
             result = view;
             view.setTag(holder);
@@ -80,6 +82,11 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
         lastPosition = position;
         holder.type.setText(location.getType());
         holder.name.setText(location.getName());
+        if(location.getSsid()==null)
+            holder.value.setText(location.getLatitude()+","+location.getLongitude());
+        else
+            holder.value.setText(location.getSsid());
+
 
         return result;
     }

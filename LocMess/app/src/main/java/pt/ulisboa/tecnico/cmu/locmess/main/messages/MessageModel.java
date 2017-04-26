@@ -17,6 +17,7 @@ public class MessageModel {
     private Calendar start;
     private Calendar end;
     private String content;
+    private String id;
     private String msgType;
 
 
@@ -24,10 +25,10 @@ public class MessageModel {
     private boolean selected;
     public View view;
 
-    public MessageModel(String location, String user, String subject, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String content, String msgType){
+    public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String msgType){
+        this.id = id;
         this.location = location;
         this.user = user;
-        this.subject = subject;
         this.policy = policy;
         this.filter = filter;
         this.start = start;
@@ -38,6 +39,7 @@ public class MessageModel {
         this.selected = false;
     }
 
+    public String getId(){ return this.id; }
 
     public String getLocation(){
         return this.location;
@@ -48,7 +50,7 @@ public class MessageModel {
     }
 
     public String getSubject(){
-        return this.subject;
+        return this.content;
     }
 
     public String getPolicy(){

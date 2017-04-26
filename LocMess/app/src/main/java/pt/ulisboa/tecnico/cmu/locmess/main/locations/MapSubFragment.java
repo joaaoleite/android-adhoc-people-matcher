@@ -235,9 +235,6 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
 
     }
 
-    public void postLocationToServer(LocationModel location){
-        // TODO: Server Requests
-    }
     public boolean isTextValid(String text){
         String pattern= "^[a-zA-Z0-9 ]+$";
         return text.matches(pattern);
