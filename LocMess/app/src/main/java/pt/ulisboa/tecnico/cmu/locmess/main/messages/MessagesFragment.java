@@ -124,18 +124,23 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
                             end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5]+"-"+e[1]+"-"+e[2]+" "+e[3]));
 
                             ArrayList<PairModel> pairs = new ArrayList<>();
-                            JSONObject tags = msg.getJSONObject("tags");
-                            for (int j = 0; j < tags.names().length(); j++)
-                                pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
+                            JSONObject tags = msg.getJSONObject("keys");
+                            if(tags!=null) {
+                                if (tags.names() != null) {
+                                    for (int j = 0; j < tags.names().length(); j++)
+                                        pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
 
-                            messagesList.add(new MessageModel(id,location, sender, content, policy, pairs, start, end, "Sent"));
+                                    messagesList.add(new MessageModel(id, location, sender, content, policy, pairs, start, end, "Sent"));
+                                }
+                            }
                         }
                         adapter = new MessageAdapter(view.getContext(), messagesList);
                         list.setAdapter(adapter);
                     }
                     catch (Exception e){
+                        e.printStackTrace();
                         Log.d("Messages","Error fetching messages!");
-                        Log.d("Messages","Error: "+e);
+                        Log.d("Messages","Error: ");
                     }
                 }
             }
@@ -169,6 +174,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             }
             if (creator && requestCode == 2) {
                 Log.d("Messages", "create");
+                adapter();
             }
         }
     }

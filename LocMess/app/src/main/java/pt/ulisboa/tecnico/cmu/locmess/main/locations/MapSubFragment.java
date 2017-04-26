@@ -114,7 +114,13 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
             String bestProvider = String.valueOf(manager.getBestProvider(new Criteria(), true));
             Location myLocation = manager.getLastKnownLocation(bestProvider);
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));
+            if(myLocation==null) {
+                myLocation = new Location(LocationManager.GPS_PROVIDER);
+                myLocation.setLatitude(38.7);
+                myLocation.setLongitude(-9.3);
+            }
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 14));
+
 
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[] {

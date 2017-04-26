@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -96,11 +98,16 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                             .setCancelable(false)
                             .setPositiveButton("Add",new DialogInterface.OnClickListener(){
                                 @Override
-                                public void onClick(DialogInterface d, int w){}
+                                public void onClick(DialogInterface d, int w){
+                                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    imm.hideSoftInputFromWindow(etKeyInputDialog.getWindowToken(), 0);
+                                }
                             })
                             .setNegativeButton("Cancel",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialogBox, int id) {
+                                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        imm.hideSoftInputFromWindow(etKeyInputDialog.getWindowToken(), 0);
                                         dialogBox.cancel();
                                     }
                                 }
@@ -108,6 +115,12 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
 
                     final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
+
+                    etKeyInputDialog.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+
                     alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -162,14 +175,17 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
             @Override
             public void onResponse(JSONObject json) throws JSONException {
                 JSONObject keys = json.getJSONObject("keys");
-                for(int i=0; i<keys.names().length(); i++){
-                    String key = keys.names().getString(i);
-                    JSONArray values = keys.getJSONArray(keys.names().getString(i));
-                    String[] array = new String[values.length()];
-                    for(int j=0; j<values.length(); j++){
-                        array[j] = values.getString(j);
+                if(keys!=null) {
+                    if(keys.names()!=null) {
+                        for (int i = 0; i < keys.names().length(); i++) {
+                            String key = keys.names().getString(i);
+                            JSONArray values = keys.getJSONArray(keys.names().getString(i));
+                            String[] array = new String[values.length()];
+                            for (int j = 0; j < values.length(); j++)
+                                array[j] = values.getString(j);
+                            autocomplete.put(key, array);
+                        }
                     }
-                    autocomplete.put(key,array);
                 }
             }
             @Override
@@ -187,7 +203,6 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     public boolean isTextValid(String text){
         String pattern= "^[a-zA-Z0-9 ]+$";
         return text.matches(pattern);
-
     }
 
 
