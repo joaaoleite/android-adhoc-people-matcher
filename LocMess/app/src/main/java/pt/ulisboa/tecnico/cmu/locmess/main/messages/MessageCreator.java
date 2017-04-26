@@ -246,8 +246,7 @@ public class MessageCreator extends AppCompatActivity {
 
         // Content
         final TextView contentView = (TextView) findViewById(R.id.content);
-=
-
+        contentView.requestFocus();
 
         //Submit
         Button submit = (Button) findViewById(R.id.submit);
