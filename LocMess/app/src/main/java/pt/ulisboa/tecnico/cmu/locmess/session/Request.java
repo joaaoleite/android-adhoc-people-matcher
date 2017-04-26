@@ -33,6 +33,7 @@ public abstract class Request {
         if(m.equals("GET")) return com.android.volley.Request.Method.GET;
         if(m.equals("POST")) return com.android.volley.Request.Method.POST;
         if(m.equals("PUT")) return com.android.volley.Request.Method.PUT;
+        if(m.equals("DELETE")) return com.android.volley.Request.Method.DELETE;
         return -1;
     }
 

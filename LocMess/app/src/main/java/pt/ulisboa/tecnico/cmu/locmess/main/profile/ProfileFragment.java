@@ -17,12 +17,18 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
 
 public class ProfileFragment extends MyFragment implements AdapterView.OnItemLongClickListener  {
 
@@ -54,7 +60,6 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
             this.list = (ListView) view.findViewById(R.id.list);
             final Fragment f = this;
             restoreState(state);
-            populate();
             adapter();
 
             FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -114,12 +119,30 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                                 info.setText("Text fields can't be empty");
                                 return;
                             }
-                            PairModel keypair = new PairModel(key,value);
-                            adapter.insertItem(keypair);
-                            ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
-                            postKeyPairToServer(keypair);
+                            final PairModel keypair = new PairModel(key,value);
 
-                            alertDialogAndroid.dismiss();
+
+                            HashMap<String,String> params = new HashMap<>();
+                            params.put("key", keypair.getKey());
+                            params.put("value", keypair.getValue());
+                            new Request("PUT","/profile",params){
+                                @Override
+                                public void onResponse(JSONObject json) throws JSONException{
+                                    alertDialogAndroid.dismiss();
+                                    if(json.getString("status").equals("ok")) {
+                                        adapter.insertItem(keypair);
+                                        ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
+                                    }
+                                    else{
+                                        ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
+                                    }
+
+                                }
+                                @Override
+                                public void onError(String msg){
+                                    ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
+                                }
+                            }.execute();
                         }
                     });
 
@@ -156,16 +179,24 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
             if(keypair.isSelected()) {
                 adapter.list.remove(i);
                 adapter.notifyDataSetChanged();
+                HashMap<String,String> params = new HashMap<>();
+                params.put("key",keypair.getKey());
+                params.put("value",keypair.getValue());
+                new Request("DELETE","/profile",params){
+                    @Override
+                    public void onResponse(JSONObject json) throws JSONException{
+
+                    }
+                    @Override
+                    public void onError(String msg){
+
+                    }
+                }.execute();
                 i--;
-                deleteKeyPairOnServer(keypair);
             }
         }
         selected=0;
         ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
-    }
-
-    public void deleteKeyPairOnServer(PairModel keypair){
-        // TODO: Server Requests
     }
 
     @Override
@@ -199,43 +230,36 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     @Override
     public void onDetach() {
         super.onDetach();
-        adapter.deselectAllItems();
+        if(adapter!=null) adapter.deselectAllItems();
         if(((MainActivity)getActivity()).getMenu()!=null)
             ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(false);
     }
 
-    private List<PairModel> populate(){
-        ArrayList<PairModel> pairs = new ArrayList<PairModel>();
-        pairs.add(new PairModel("restaurante","capitanga"));
-        pairs.add(new PairModel("clube","benfica"));
-        pairs.add(new PairModel("cor","vermelho"));
-        pairs.add(new PairModel("caralho","fodase"));
-        pairs.add(new PairModel("merda","caralho"));
-        pairs.add(new PairModel("fodase","merda"));
-        pairs.add(new PairModel("restaurante2","capitanga"));
-        pairs.add(new PairModel("club2e","benfica"));
-        pairs.add(new PairModel("c2or","vermelho"));
-        pairs.add(new PairModel("c22aralho","fodase"));
-        pairs.add(new PairModel("mer2da","caralho"));
-        pairs.add(new PairModel("fod2ase","merda"));
-        pairs.add(new PairModel("res3taurante","capitanga"));
-        pairs.add(new PairModel("clu3be","benfica"));
-        pairs.add(new PairModel("co3r","vermelho"));
-        pairs.add(new PairModel("ca3ralho","fodase"));
-        pairs.add(new PairModel("me3rda","caralho"));
-        pairs.add(new PairModel("fo3dase","merda"));
-        pairs.add(new PairModel("re3staurante2","capitanga"));
-        pairs.add(new PairModel("cl3ub2e","benfica"));
-        pairs.add(new PairModel("c23or","vermelho"));
-        pairs.add(new PairModel("c22a3ralho","fodase"));
-        pairs.add(new PairModel("mer23da","caralho"));
-        pairs.add(new PairModel("fod32ase","merda"));
-        return pairs;
-    }
     private void adapter(){
         list.setOnItemLongClickListener(this);
-        adapter = new PairAdapter(view.getContext(), this.populate());
+        adapter = new PairAdapter(view.getContext(), new ArrayList<PairModel>());
         list.setAdapter(adapter);
+
+        new Request("GET","/profile"){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException{
+                ArrayList<PairModel> pairs = new ArrayList<>();
+                JSONObject keys = json.getJSONObject("keys");
+                if(keys.length()>0) {
+                    for (int i = 0; i < keys.names().length(); i++) {
+                        String key = keys.names().getString(i);
+                        String value = keys.getString(keys.names().getString(i));
+                        pairs.add(new PairModel(key, value));
+                    }
+                    adapter = new PairAdapter(view.getContext(), pairs);
+                    list.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onError(String msg){
+
+            }
+        }.execute();
     }
 
 

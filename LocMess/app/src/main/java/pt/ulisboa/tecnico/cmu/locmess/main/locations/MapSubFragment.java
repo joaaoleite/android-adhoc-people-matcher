@@ -1,10 +1,18 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.locations;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +31,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
 
 
 public class MapSubFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
@@ -86,10 +101,27 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
 
         map.setOnMapLongClickListener(this);
 
-        // my location
-        LatLng location = new LatLng(38.740561,-9.304168);
-        map.addMarker(new MarkerOptions().position(location).title("Your location"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(location));
+        map.moveCamera(CameraUpdateFactory.zoomTo(15));
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+
+            LocationManager manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            String bestProvider = String.valueOf(manager.getBestProvider(new Criteria(), true));
+            Location myLocation = manager.getLastKnownLocation(bestProvider);
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));
+
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+            }, 0);
+        }
 
         for(int i=0; i<ListSubFragment.adapter.getCount(); i++){
             LocationModel l = ListSubFragment.adapter.getItem(i);
@@ -142,27 +174,62 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
             @Override
             public void onClick(View view) {
 
-                Double lat = Double.parseDouble(latInput.getText().toString().toLowerCase());
-                Double lon = Double.parseDouble(longInput.getText().toString().toLowerCase());
-                String name = etInputName.getText().toString().toLowerCase();
-                int radius = Integer.parseInt(radiusInput.getText().toString().toLowerCase());
+                Double lat = 0.0;
+                Double lon = 0.0;
+                String name = "...";
+                int radius = 0;
 
-                if (!isTextValid(name)){
+                try {
+                    lat = Double.parseDouble(latInput.getText().toString().toLowerCase());
+                    lon = Double.parseDouble(longInput.getText().toString().toLowerCase());
+                    name = etInputName.getText().toString().toLowerCase();
+                    radius = Integer.parseInt(radiusInput.getText().toString().toLowerCase());
+
+                    if (!isTextValid(name)) {
+                        TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
+                        info.setText("Text fields can't be empty");
+                        return;
+                    }
+                }
+                catch (Exception e){
                     TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                    info.setText("Text fields can't be empty");
+                    info.setText("Some fields are invalid!");
                     return;
                 }
-                LocationModel location = new LocationModel(name, lat, lon, radius);
-                ListSubFragment.adapter.insertItem(location);
 
-                int size = ListSubFragment.adapter.getCount();
-                ListView l = (ListView)container.findViewById(R.id.locationslist);
-                if(l!=null) l.smoothScrollToPosition(size);
-                postLocationToServer(location);
-                map.addMarker(new MarkerOptions()
-                        .position(point)
-                        .title(name));
-                alertDialogAndroid.dismiss();
+                final LocationModel location = new LocationModel(name, lat, lon, radius);
+
+                HashMap<String,String> params = new HashMap<>();
+                params.put("name",location.getName());
+                params.put("latitude",location.getLatitude()+"");
+                params.put("longitude",location.getLongitude()+"");
+                params.put("radius",location.getRadius()+"");
+                new Request("POST","/locations",params) {
+                    @Override
+                    public void onResponse(JSONObject json) throws JSONException {
+                        if (json.getString("status").equals("ok")) {
+
+                            ListSubFragment.adapter.insertItem(location);
+
+                            int size = ListSubFragment.adapter.getCount();
+                            ListView l = (ListView)container.findViewById(R.id.locationslist);
+                            if(l!=null) l.smoothScrollToPosition(size);
+
+                            map.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .title(location.getName()));
+                            alertDialogAndroid.dismiss();
+                        }
+                        else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        alertDialogAndroid.dismiss();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        alertDialogAndroid.dismiss();
+                    }
+                }.execute();
             }
         });
 

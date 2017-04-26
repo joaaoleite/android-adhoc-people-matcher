@@ -1,12 +1,21 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.locations;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +27,21 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairAdapter;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.Request;
 
 
 public class ListSubFragment extends Fragment implements AdapterView.OnItemLongClickListener  {
@@ -74,13 +92,46 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
 
     public void getSSIDs(){
         final String[] ssids = new String[]{"tagus","bar","restaurante"};
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        showSSIDDialog(ssids);
+
+        Log.d("Wifi","getSSIDs");
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+            Log.d("Wifi","permission granted");
+
+            final WifiManager wifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wifi.isWifiEnabled() == false) {
+                Toast.makeText(getActivity().getApplicationContext(), "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
+                wifi.setWifiEnabled(true);
+            }
+
+            getActivity().registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context c, Intent intent) {
+                    List<ScanResult> results = wifi.getScanResults();
+                    int size = results.size();
+                    ArrayList<String> ssids = new ArrayList<String>();
+                    for (int i = 0; i < size; i++) {
+                        if(!ssids.contains(results.get(i).SSID))
+                            ssids.add(results.get(i).SSID);
                     }
+                    showSSIDDialog(ssids.toArray(new String[0]));
                 }
-        ,1000);
+            }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+            wifi.startScan();
+        }
+        else{
+            Log.d("Wifi","permission to be granted");
+            ActivityCompat.requestPermissions(getActivity(), new String[] {
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.CHANGE_WIFI_STATE
+            }, 0);
+            showSSIDDialog(new String[]{});
+        }
     }
 
     public String getMac(String ssid){
@@ -98,21 +149,27 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     }
 
     public void deleteClicked() {
+        Log.d("LocsList","deleteClicked");
         for (int i = 0; i < adapter.getCount(); i++) {
             LocationModel location = adapter.getItem(i);
             if(location.isSelected()) {
+                Log.d("LocsList","location to delete:"+i);
                 adapter.list.remove(i);
                 adapter.notifyDataSetChanged();
-                i--;
-                deleteLocationOnServer(location);
+                new Request("DELETE","/locations/"+location.getName()){
+                    @Override
+                    public void onResponse(JSONObject json){
+                        Log.d("LocsList","onResponse");
+                    }
+                    @Override
+                    public void onError(String msg){
+                        Log.d("LocsList","onError");
+                    }
+                }.execute();
             }
         }
         selected=0;
         ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
-    }
-
-    public void deleteLocationOnServer(LocationModel location){
-        // TODO: Server Requests
     }
 
     @Override
@@ -156,8 +213,40 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     }
     private void adapter(){
         list.setOnItemLongClickListener(this);
-        adapter = new LocationAdapter(view.getContext(), this.populate());
+        adapter = new LocationAdapter(view.getContext(), new ArrayList<LocationModel>());
         list.setAdapter(adapter);
+
+        new Request("GET","/locations"){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException {
+                ArrayList<LocationModel> locations = new ArrayList<>();
+                JSONArray locs = json.getJSONArray("locations");
+                if(locs.length()>0) {
+                    for (int i = 0; i < locs.length(); i++) {
+                        JSONObject loc = locs.getJSONObject(i);
+                        String name = loc.getString("name");
+
+                        if(loc.has("ssid")) {
+                            String ssid = loc.getString("ssid");
+                            String mac = "...";
+                            locations.add(new LocationModel(name, ssid, mac));
+                        }
+                        else{
+                            double lat = loc.getDouble("latitude");
+                            double lng = loc.getDouble("longitude");
+                            int radius = loc.getInt("radius");
+                            locations.add(new LocationModel(name, lat, lng, radius));
+                        }
+                    }
+                    adapter = new LocationAdapter(view.getContext(), locations);
+                    list.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onError(String msg){
+
+            }
+        }.execute();
     }
 
     private void loadingDialog(String message){
@@ -210,14 +299,31 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                     info.setText("Text fields can't be empty");
                     return;
                 }
-                LocationModel location = new LocationModel(name, ssid, mac);
-                adapter.insertItem(location);
+                final LocationModel location = new LocationModel(name, ssid, mac);
 
-                int size = adapter.getCount();
-                ListView l = (ListView)container.findViewById(R.id.locationslist);
-                if(l!=null) l.smoothScrollToPosition(size);
-                postKeyPairToServer(location);
-                alertDialogAndroid.dismiss();
+                HashMap<String,String> params = new HashMap<>();
+                params.put("name",location.getName());
+                params.put("ssid",location.getSsid());
+                params.put("mac",location.getMac());
+                new Request("POST","/locations",params) {
+                    @Override
+                    public void onResponse(JSONObject json) throws JSONException {
+                        if (json.getString("status").equals("ok")) {
+                            adapter.insertItem(location);
+                            int size = adapter.getCount();
+                            ListView l = (ListView)container.findViewById(R.id.locationslist);
+                            if(l!=null) l.smoothScrollToPosition(size);
+                        }
+                        else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        alertDialogAndroid.dismiss();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        alertDialogAndroid.dismiss();
+                    }
+                }.execute();
             }
         });
 
