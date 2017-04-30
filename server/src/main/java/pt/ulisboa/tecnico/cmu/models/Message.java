@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.math.BigInteger;
 import org.json.JSONArray;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Message extends Model {
 
@@ -42,7 +43,7 @@ public class Message extends Model {
 		return (new Date().after(this.start)) && (new Date().before(this.end));
 	}
 
-	public boolean fitKeys(HashMap<String, String> userKeys){
+	public boolean fitKeys(ConcurrentHashMap<String, String> userKeys){
 		if(policy.equals("whitelist") && keys == null) return true;
 
 		for(HashMap.Entry<String, String> entry : this.keys.entrySet()){

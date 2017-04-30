@@ -6,9 +6,10 @@ import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 
-public abstract class Controller extends HashMap<String, Model>{
+public abstract class Controller extends ConcurrentHashMap<String, Model>{
 
     public static JSONObject toJSON(HashSet<? extends Model> set, String arrayName){
         JSONObject obj = new JSONObject();
@@ -20,7 +21,7 @@ public abstract class Controller extends HashMap<String, Model>{
         return obj;
     }
 
-    public static JSONObject toJSON(HashMap<String, String> map, String objName){
+    public static JSONObject toJSON(ConcurrentHashMap<String, String> map, String objName){
         JSONObject obj = new JSONObject();
         JSONObject keysObj = new JSONObject();
         for(HashMap.Entry<String, String> entry : map.entrySet())
@@ -30,7 +31,7 @@ public abstract class Controller extends HashMap<String, Model>{
         return obj;
     }
 
-    public static JSONObject toJSONComplex(HashMap<String, HashSet<String>> map, String arrayName){
+    public static JSONObject toJSONComplex(ConcurrentHashMap<String, HashSet<String>> map, String arrayName){
         JSONObject obj = new JSONObject();
         JSONObject keysObj = new JSONObject();
         for(HashMap.Entry<String, HashSet<String>> keys : map.entrySet()){

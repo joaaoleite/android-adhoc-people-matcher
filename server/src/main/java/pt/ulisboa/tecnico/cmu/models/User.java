@@ -4,18 +4,19 @@ import java.util.HashMap;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class User extends Model{
 
 	private String username;
 	private String password;
-	private HashMap<String, String> keys;
+	private ConcurrentHashMap<String, String> keys;
 	private HashSet<String> messagesID;
 
 	public User(String username, String password){
 		this.username = username;
 		this.password = password;
-		this.keys = new HashMap<String, String>();
+		this.keys = new ConcurrentHashMap<String, String>();
 		this.messagesID = new HashSet<String>();
 	}
 
@@ -23,7 +24,7 @@ public class User extends Model{
 		return this.password;
 	}
 
-	public HashMap<String, String> getKeys(){
+	public ConcurrentHashMap<String, String> getKeys(){
 		return this.keys;
 	}
 
