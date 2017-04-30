@@ -43,6 +43,9 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         // Required empty public constructor
     }
 
+    public static void deleteInstance(){
+        singleton = null;
+    }
     public static MessagesFragment newInstance() {
         if(singleton==null) singleton = new MessagesFragment();
         return singleton;

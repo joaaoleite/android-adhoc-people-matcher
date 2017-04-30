@@ -57,6 +57,9 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     private BroadcastReceiver receiver;
 
 
+    public static void deleteInstance(){
+        singleton = null;
+    }
     public ListSubFragment() {
     }
 
@@ -98,7 +101,11 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(getActivity(),
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             Log.d("Wifi","permission granted");
 
@@ -113,10 +120,12 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                 public void onReceive(Context c, Intent intent) {
                     List<ScanResult> results = wifi.getScanResults();
                     int size = results.size();
+                    Log.d("sizeSSID",""+size);
                     ArrayList<String> ssids = new ArrayList<String>();
                     for (int i = 0; i < size; i++) {
                         if(!ssids.contains(results.get(i).SSID)) {
                             ssids.add(results.get(i).SSID);
+                            Log.d("SSID","results.get(i).SSID"+results.get(i).SSID);
                             macs.put(results.get(i).SSID,results.get(i).BSSID);
                         }
                     }
@@ -129,12 +138,14 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
             wifi.startScan();
         }
         else{
+            loadingDialog(false);
             Log.d("Wifi","permission to be granted");
             ActivityCompat.requestPermissions(getActivity(), new String[] {
                     Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.CHANGE_WIFI_STATE
+                    Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
             }, 0);
-            showSSIDDialog(new String[]{});
         }
     }
 

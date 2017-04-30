@@ -91,6 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(JSONObject obj) throws JSONException{
                 if(obj.getString("status").equals("ok")){
                     loadingDialog(false);
+                    success = true;
                     dialogAlert("Register successful!");
                 }
                 else{

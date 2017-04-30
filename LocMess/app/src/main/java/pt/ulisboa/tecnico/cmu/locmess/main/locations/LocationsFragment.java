@@ -22,6 +22,9 @@ public class LocationsFragment extends MyFragment {
 
     public LocationsFragment() {}
 
+    public static void deleteInstance(){
+        singleton = null;
+    }
     public static LocationsFragment newInstance() {
         Log.d("locations","newInstance");
         if(singleton == null) singleton = new LocationsFragment();

@@ -45,7 +45,9 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
 
     public ProfileFragment() {
     }
-
+    public static void deleteInstance(){
+        singleton = null;
+    }
     public static ProfileFragment newInstance() {
         Log.d("profile","newInstance");
         if(singleton == null) singleton = new ProfileFragment();
@@ -99,15 +101,13 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                             .setPositiveButton("Add",new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface d, int w){
-                                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                    imm.hideSoftInputFromWindow(etKeyInputDialog.getWindowToken(), 0);
+
                                 }
                             })
                             .setNegativeButton("Cancel",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialogBox, int id) {
-                                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        imm.hideSoftInputFromWindow(etKeyInputDialog.getWindowToken(), 0);
+
                                         dialogBox.cancel();
                                     }
                                 }
@@ -115,10 +115,6 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
 
                     final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
-
-                    etKeyInputDialog.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
 
                     alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
@@ -184,6 +180,7 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                             for (int j = 0; j < values.length(); j++)
                                 array[j] = values.getString(j);
                             autocomplete.put(key, array);
+                            Log.d("AutoComplete","tao?");
                         }
                     }
                 }

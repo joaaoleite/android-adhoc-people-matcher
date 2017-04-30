@@ -46,6 +46,7 @@ public abstract class Request {
             public void onResponse(String res) {
                 try {
                     Log.d("HTTP","onResponse: "+res);
+                    Log.d("HTTP",url);
                     JSONObject json = new JSONObject(res);
                     that.onResponse(json);
                 } catch (JSONException e) {

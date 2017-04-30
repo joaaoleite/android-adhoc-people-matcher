@@ -53,6 +53,9 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
         // Required empty public constructor
     }
 
+    public static void deleteInstance(){
+        singleton = null;
+    }
     public static MapSubFragment newInstance() {
         Log.d("map","newInstance");
         if(singleton == null) singleton = new MapSubFragment();
