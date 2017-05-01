@@ -29,6 +29,7 @@ public class MessageViewer extends AppCompatActivity {
         TextView subject = (TextView) findViewById(R.id.messageSubject);
         TextView content = (TextView) findViewById(R.id.messageContent);
         TextView location = (TextView) findViewById(R.id.messageLocation);
+
         TextView policy = (TextView) findViewById(R.id.messagePolicy);
         TextView filter = (TextView) findViewById(R.id.messageFilter);
         TextView start = (TextView) findViewById(R.id.messageStart);
@@ -38,13 +39,11 @@ public class MessageViewer extends AppCompatActivity {
         user.setText(myIntent.getStringExtra("user"));
         subject.setText(myIntent.getStringExtra("subject"));
         content.setText(myIntent.getStringExtra("content"));
-        if(myIntent.getStringExtra("type").equals("Sent")){
             location.setText(myIntent.getStringExtra("location"));
             policy.setText(myIntent.getStringExtra("policy"));
             filter.setText(myIntent.getStringExtra("filter"));
             start.setText(myIntent.getStringExtra("start"));
             end.setText(myIntent.getStringExtra("end"));
-        }
         this.position = myIntent.getIntExtra("position",-1);
     }
 

@@ -33,10 +33,12 @@ import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Exchanger;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
@@ -64,6 +66,20 @@ public class MessageCreator extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus) return;
+
+                Calendar cal = Calendar.getInstance();
+                if(!startDate.getText().equals("")) {
+                    try {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                        Date date = dateFormat.parse(startDate.getText() + "");
+                        cal.setTime(date);
+                    }
+                    catch (Exception e){}
+                }
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
                 DatePickerDialog picker = new DatePickerDialog(that, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -74,7 +90,7 @@ public class MessageCreator extends AppCompatActivity {
                         if(dayOfMonth/10==0) d = "0"+d;
                         startDate.setText(year+"/"+m+"/"+d);
                     }
-                }, 2017, 1, 1);
+                }, year, month, day);
                 picker.show();
             }
         });
@@ -85,6 +101,19 @@ public class MessageCreator extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus) return;
+
+                int hours = 0;
+                int minutes = 0;
+
+                String time = startTime.getText().toString();
+                if(!time.equals("")){
+                    try {
+                        hours = Integer.parseInt(time.split(":")[0]);
+                        minutes = Integer.parseInt(time.split(":")[1]);
+                    }
+                    catch (Exception e){}
+                }
+
                 TimePickerDialog picker = new TimePickerDialog(that, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -94,7 +123,7 @@ public class MessageCreator extends AppCompatActivity {
                         if(minute/10==0) m = "0"+m;
                         startTime.setText(h+":"+m);
                     }
-                }, 0, 0, true);
+                }, hours, minutes, true);
                 picker.show();
             }
         });
@@ -104,6 +133,20 @@ public class MessageCreator extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus) return;
+
+                Calendar cal = Calendar.getInstance();
+                if(!endDate.getText().equals("")) {
+                    try {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                        Date date = dateFormat.parse(endDate.getText() + "");
+                        cal.setTime(date);
+                    }
+                    catch (Exception e){}
+                }
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
                 DatePickerDialog picker = new DatePickerDialog(that, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -114,7 +157,7 @@ public class MessageCreator extends AppCompatActivity {
                         if(dayOfMonth/10==0) d = "0"+d;
                         endDate.setText(year+"/"+m+"/"+d);
                     }
-                }, 2017, 1, 1);
+                }, year, month, day);
                 picker.show();
             }
         });
@@ -123,6 +166,19 @@ public class MessageCreator extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus) return;
+
+                int hours = 0;
+                int minutes = 0;
+
+                String time = endTime.getText().toString();
+                if(!time.equals("")){
+                    try {
+                        hours = Integer.parseInt(time.split(":")[0]);
+                        minutes = Integer.parseInt(time.split(":")[1]);
+                    }
+                    catch (Exception e){}
+                }
+
                 TimePickerDialog picker = new TimePickerDialog(that, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -132,7 +188,7 @@ public class MessageCreator extends AppCompatActivity {
                         if(minute/10==0) m = "0"+m;
                         endTime.setText(h+":"+m);
                     }
-                }, 0, 0, true);
+                }, hours, minutes, true);
                 picker.show();
             }
         });

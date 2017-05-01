@@ -41,7 +41,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
 
     private ListView list;
     private View view;
-    private MessageAdapter adapter;
+    public MessageAdapter adapter;
     private static MessagesFragment singleton;
 
     public MessagesFragment() {

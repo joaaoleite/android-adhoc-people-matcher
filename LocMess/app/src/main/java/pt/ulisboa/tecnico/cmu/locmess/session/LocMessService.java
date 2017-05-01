@@ -36,6 +36,7 @@ import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageAdapter;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageViewer;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 
 public class LocMessService extends Service {
 
@@ -48,13 +49,14 @@ public class LocMessService extends Service {
         @Override
         public void run() {
             Log.d("Service","background");
-            try{
-                Thread.sleep(5000);
+            while(true) {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                }
+                getLocation();
+                getSSIDs();
             }
-            catch(Exception e){ }
-
-            getLocation();
-            getSSIDs();
         }
     };
 
@@ -174,7 +176,7 @@ public class LocMessService extends Service {
             if(set==null) set = new HashSet<String>();
             for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
                 String obj = it.next();
-                if (new JSONObject(obj).toString().equals(msg)) return;
+                if (new JSONObject(obj).getString("id").equals(msg.getString("id"))) return;
             }
             set.add(msg.toString());
 
@@ -182,6 +184,12 @@ public class LocMessService extends Service {
             editor.putStringSet("messages", set);
             editor.commit();
 
+            MessagesFragment mf = MessagesFragment.newInstance();
+            if(mf!=null) {
+                if(mf.adapter!=null){
+                    mf.adapter.insertItem(msg);
+                }
+            }
             launchNotification(msg);
         }
         catch (JSONException e){ }
@@ -214,7 +222,6 @@ public class LocMessService extends Service {
 
         intent.putExtra("position", 0);
 
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(this)

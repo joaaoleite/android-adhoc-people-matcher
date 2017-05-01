@@ -36,6 +36,14 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         this.msgType = "All";
     }
 
+    public void insertItem(JSONObject msg) {
+        try {
+            MessageModel message = parse(msg,"Received");
+            list.add(message);
+            notifyDataSetChanged();
+        }catch(Exception e){}
+    }
+
     public void insertItem(MessageModel p){
 
         list.add(p);
