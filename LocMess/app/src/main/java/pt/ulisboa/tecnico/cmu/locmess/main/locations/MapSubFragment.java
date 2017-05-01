@@ -130,6 +130,12 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION
             }, 0);
+            Location myLocation = new Location(LocationManager.GPS_PROVIDER);
+            myLocation.setLatitude(38.7);
+            myLocation.setLongitude(-9.3);
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 14));
+
         }
 
         for(int i=0; i<ListSubFragment.adapter.getCount(); i++){
