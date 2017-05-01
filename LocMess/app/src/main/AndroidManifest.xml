@@ -57,7 +57,7 @@
         </activity>
 
         <service
-            android:name=".session.MyService"
+            android:name=".session.LocMessService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

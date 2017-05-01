@@ -8,9 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
 
 public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
@@ -67,6 +75,43 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
                 count++;
         }
         return count;
+    }
+    public static MessageModel parse(String msg, String type) {
+        try{
+            return parse(new JSONObject(msg),type);
+        }
+        catch (JSONException e){}
+        return null;
+    }
+    public static MessageModel parse(JSONObject msg, String type){
+        try {
+            String location = msg.getString("location");
+            String sender = msg.getString("user");
+            String content = msg.getString("content");
+            String policy = msg.getString("policy");
+            String id = msg.getString("id");
+
+            Calendar start = Calendar.getInstance();
+            String[] s = msg.getString("start").split(" ");
+            start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5] + "-" + s[1] + "-" + s[2] + " " + s[3]));
+            Calendar end = Calendar.getInstance();
+            String[] e = msg.getString("end").split(" ");
+            end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5] + "-" + e[1] + "-" + e[2] + " " + e[3]));
+
+            ArrayList<PairModel> pairs = new ArrayList<>();
+            JSONObject tags = msg.getJSONObject("keys");
+            if (tags != null) {
+                if (tags.names() != null) {
+                    for (int j = 0; j < tags.names().length(); j++)
+                        pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
+
+                    return new MessageModel(id, location, sender, content, policy, pairs, start, end, type);
+                }
+            }
+        }
+        catch (JSONException e) { }
+        catch (ParseException e){ }
+        return null;
     }
 
     @Override

@@ -25,6 +25,19 @@ public class MessageModel {
     private boolean selected;
     public View view;
 
+    public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end){
+        this.id = id;
+        this.location = location;
+        this.user = user;
+        this.policy = policy;
+        this.filter = filter;
+        this.start = start;
+        this.end = end;
+        this.content = content;
+        this.msgType = "Sent";
+        this.selected = false;
+    }
+
     public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String msgType){
         this.id = id;
         this.location = location;

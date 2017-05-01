@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,12 +24,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
 import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 
 public class MessagesFragment extends MyFragment implements AdapterView.OnItemClickListener{
@@ -103,39 +108,29 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         list.setAdapter(adapter);
         list.setOnItemClickListener(this);
 
+        final ArrayList<MessageModel> messagesList = new ArrayList<>();
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(Session.APP_NAME,Context.MODE_PRIVATE);
+        Set<String> received = prefs.getStringSet("messages",null);
+        if(received!=null){
+            for (Iterator<String> it = received.iterator(); it.hasNext(); ) {
+                String msg = it.next();
+                MessageModel m = MessageAdapter.parse(msg,"Received");
+                if(m!=null) messagesList.add(m);
+            }
+        }
+
         new Request("GET","/messages"){
             @Override
             public void onResponse(JSONObject json) throws JSONException {
                 if(json.getString("status").equals("ok")){
-                    ArrayList<MessageModel> messagesList = new ArrayList<>();
                     try {
                         JSONArray messages = json.getJSONArray("messages");
 
                         for (int i = 0; i < messages.length(); i++) {
                             JSONObject msg = messages.getJSONObject(i);
-                            String location = msg.getString("location");
-                            String sender = msg.getString("user");
-                            String content = msg.getString("content");
-                            String policy = msg.getString("policy");
-                            String id = msg.getString("id");
-
-                            Calendar start = Calendar.getInstance();
-                            String[] s = msg.getString("start").split(" ");
-                            start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5]+"-"+s[1]+"-"+s[2]+" "+s[3]));
-                            Calendar end = Calendar.getInstance();
-                            String[] e = msg.getString("end").split(" ");
-                            end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5]+"-"+e[1]+"-"+e[2]+" "+e[3]));
-
-                            ArrayList<PairModel> pairs = new ArrayList<>();
-                            JSONObject tags = msg.getJSONObject("keys");
-                            if(tags!=null) {
-                                if (tags.names() != null) {
-                                    for (int j = 0; j < tags.names().length(); j++)
-                                        pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
-
-                                    messagesList.add(new MessageModel(id, location, sender, content, policy, pairs, start, end, "Sent"));
-                                }
-                            }
+                            MessageModel m = MessageAdapter.parse(msg,"Sent");
+                            if(m!=null) messagesList.add(m);
                         }
                         adapter = new MessageAdapter(view.getContext(), messagesList);
                         list.setAdapter(adapter);
@@ -197,7 +192,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             filter = filter + message.getFilter().get(i).getKey()+ " - " + message.getFilter().get(i).getValue() + "\n";
         }
 
-        String start = message.getEnd().getTime()+"";
+        String start = message.getStart().getTime()+"";
         String end = message.getEnd().getTime()+"";
 
         start = start.split(" ")[1]+" "+start.split(" ")[2]+" "+start.split(" ")[5]+" at "+start.split(" ")[3].split(":")[0]+":"+start.split(" ")[3].split(":")[1];

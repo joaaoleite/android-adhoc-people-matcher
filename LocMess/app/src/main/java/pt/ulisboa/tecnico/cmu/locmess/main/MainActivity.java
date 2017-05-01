@@ -12,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
@@ -26,7 +27,7 @@ import pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
 import pt.ulisboa.tecnico.cmu.locmess.R;
-import pt.ulisboa.tecnico.cmu.locmess.session.MyService;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment,"current").commit();
 
-        //startService(new Intent(this, MyService.class));
+        startService(new Intent(MainActivity.this, LocMessService.class));
     }
 
     @Override
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         ListSubFragment.deleteInstance();
         MapSubFragment.deleteInstance();
         MessagesFragment.deleteInstance();
-
+        stopService(new Intent(this, LocMessService.class));
         Session.getInstance().logout();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
