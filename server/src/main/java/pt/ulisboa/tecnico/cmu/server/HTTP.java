@@ -12,8 +12,9 @@ public class HTTP{
 
     public HTTP(int port){
         port(port);
+        secure("src/main/java/pt/ulisboa/tecnico/cmu/server/keystore.jks", "cmu123", null, null);
     }
-    
+
     public void GET(String endpoint, BiFunction<Map<String, String>, String, JSONObject> done){
         get(endpoint, (request, response) -> {
 			System.out.println("HTTP GET: " + endpoint);
