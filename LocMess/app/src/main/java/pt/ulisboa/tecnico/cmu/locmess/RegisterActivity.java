@@ -1,28 +1,19 @@
 package pt.ulisboa.tecnico.cmu.locmess;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.BoolRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class RegisterActivity extends AppCompatActivity {
 

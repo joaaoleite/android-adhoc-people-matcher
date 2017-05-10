@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,14 +13,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -29,21 +25,16 @@ import android.widget.TimePicker;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.Exchanger;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
-import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
-import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
-import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class MessageCreator extends AppCompatActivity {
 

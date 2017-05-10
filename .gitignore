@@ -1,4 +1,7 @@
 
+# Termite-Cli
+Termite-Cli/
+
 # Created by https://www.gitignore.io/api/maven,java
 
 ### Java ###
@@ -18,7 +21,7 @@
 *.jar
 *.war
 *.ear
-*.zip
+#*.zip
 *.tar.gz
 *.rar
 

@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -18,10 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,7 +35,7 @@ import java.util.HashMap;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
-import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 
 public class MapSubFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {

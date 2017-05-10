@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -25,12 +23,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
-import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class ProfileFragment extends MyFragment implements AdapterView.OnItemLongClickListener  {
 

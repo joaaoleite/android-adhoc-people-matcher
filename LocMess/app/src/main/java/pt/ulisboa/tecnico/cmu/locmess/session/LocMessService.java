@@ -1,14 +1,15 @@
 package pt.ulisboa.tecnico.cmu.locmess.session;
 
 import android.Manifest;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -17,6 +18,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -32,11 +34,17 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageAdapter;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageViewer;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.SimWifiP2pBroadcastReceiver;
+import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.WifiDirect;
 
 public class LocMessService extends Service {
 
@@ -45,15 +53,25 @@ public class LocMessService extends Service {
     private Location location;
     private boolean givingLocation = false;
 
+    private static Context context;
+    public static Context getContext(){
+        return context;
+    }
+
+
     private Runnable background = new Runnable() {
         @Override
         public void run() {
             Log.d("Service","background");
+
+            WifiDirect wifiDirect = new WifiDirect(LocMessService.this);
+
             while(true) {
                 try {
                     Thread.sleep(5000);
                 } catch (Exception e) {
                 }
+                wifiDirect.getDevices();
                 getLocation();
                 getSSIDs();
             }
@@ -68,6 +86,7 @@ public class LocMessService extends Service {
     }
     @Override
     public void onCreate() {
+        context = getApplicationContext();
         Log.d("Service","onCreate");
     }
     @Override
@@ -124,6 +143,7 @@ public class LocMessService extends Service {
             wifi.startScan();
         }
     }
+
     private void giveLocation(){
         givingLocation = true;
         HashMap<String,String> params = new HashMap<>();

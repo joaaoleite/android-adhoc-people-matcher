@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class Session {
 
     public static final String APP_NAME = "pt.ulisboa.tecnico.cmu.locmess";
-    public static final String BASE_URL = "http://cmu.n1z.pt:8080";
+    public static final String BASE_URL = "https://cmu.n1z.pt:8080";
 
     private static Session instance = null;
 

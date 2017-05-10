@@ -1,9 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.main;
 
 import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,17 +9,12 @@ import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
-import android.view.View;
-
-import java.util.Random;
 
 import pt.ulisboa.tecnico.cmu.locmess.LoginActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.ListSubFragment;

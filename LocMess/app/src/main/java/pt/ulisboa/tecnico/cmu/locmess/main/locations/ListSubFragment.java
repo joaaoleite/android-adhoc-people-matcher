@@ -39,9 +39,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
-import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairAdapter;
-import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
-import pt.ulisboa.tecnico.cmu.locmess.session.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 
 public class ListSubFragment extends Fragment implements AdapterView.OnItemLongClickListener  {
