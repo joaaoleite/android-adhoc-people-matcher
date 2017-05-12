@@ -90,7 +90,7 @@ public class WifiDirect implements GroupInfoListener {
             if (!nearbyDevices.contains(ip)) {
                 Log.d("WifiDirect","New device added "+ip);
                 nearbyDevices.add(ip);
-                sendData(ip);
+                new SendTask(ip).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
 
@@ -100,11 +100,6 @@ public class WifiDirect implements GroupInfoListener {
                 nearbyDevices.remove(ip);
             }
         }
-    }
-
-    public void sendData(String ip){
-        String data = "Example message from "+ip;
-        new SendTask(ip).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,data);
     }
 
     public void getDevices(){

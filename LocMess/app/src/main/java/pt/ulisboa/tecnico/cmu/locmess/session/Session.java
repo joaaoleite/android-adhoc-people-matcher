@@ -10,10 +10,21 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationAdapter;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationModel;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class Session {
 
@@ -87,5 +98,71 @@ public class Session {
         editor.putBoolean("login",false);
         editor.putString("token",null);
         editor.apply();
+    }
+
+
+    // --------------------------------------------
+
+    public void updateLocations(){
+        new Request("GET","/locations"){
+            @Override
+            public void onResponse(JSONObject json) throws JSONException {
+                JSONArray locs = json.getJSONArray("locations");
+                if(locs!=null && locs.length()>0) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("locations", locs.toString());
+                    editor.commit();
+                    Log.d("Session", "save locations complete: " + locs);
+                }
+            }
+            @Override
+            public void onError(String msg){
+
+            }
+        }.execute();
+    }
+
+    public String getLocations(){ return prefs.getString("locations",null); }
+
+    public String getProfile(){
+        return prefs.getString("profile",null);
+    }
+
+    public String getKeys(){
+        return prefs.getString("messages",null);
+    }
+
+    public void saveKeys(List<PairModel> pairs){
+
+        if(pairs!=null && pairs.size()>0) {
+            JSONObject json = new JSONObject();
+            try {
+
+                for (int i = 0; i < pairs.size(); i++)
+                    json.put(pairs.get(i).getKey(), pairs.get(i).getValue());
+
+            }catch (JSONException e){}
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("profile", json.toString());
+            editor.commit();
+
+            Log.d("Session", "save pairs complete: " + json);
+        }
+    }
+
+    public void saveMsgs(List<MessageModel> messages){
+        if(messages!=null && messages.size()>0) {
+            JSONArray json = new JSONArray();
+
+            for (int i = 0; i < messages.size(); i++)
+                json.put(messages.get(i).toJSON());
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messages", json.toString());
+            editor.commit();
+
+            Log.d("Session", "save messages complete: " + json);
+        }
     }
 }

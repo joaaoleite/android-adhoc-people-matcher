@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,6 +43,7 @@ import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageAdapter;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageViewer;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.WifiDirect;

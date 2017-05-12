@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.profile;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class PairAdapter extends ArrayAdapter<PairModel>{
 
@@ -25,6 +28,7 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
     public PairAdapter(Context context, List<PairModel> list){
         super(context, R.layout.layout_pair);
         this.list = list;
+        notifyDataSetChanged();
     }
 
     public void deselectAllItems(){
@@ -42,9 +46,20 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
                 return;
             }
         }
-
         list.add(p);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
+        Log.d("PairAdapter","notifyDataSetChanged to shared prefs");
+        try{
+            Session.getInstance().saveKeys(list);
+        }
+        catch (Exception e){
+            Log.d("PairAdapter","notifyDataSetChanged error!");
+        }
     }
 
 

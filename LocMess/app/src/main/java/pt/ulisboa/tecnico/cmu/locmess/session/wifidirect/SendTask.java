@@ -3,14 +3,20 @@ package pt.ulisboa.tecnico.cmu.locmess.session.wifidirect;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Set;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
-public class SendTask extends AsyncTask<String, String, Void> {
+public class SendTask extends AsyncTask<Void, String, Void> {
 
     private String ip;
 
@@ -19,7 +25,7 @@ public class SendTask extends AsyncTask<String, String, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... msg) {
+    protected Void doInBackground(Void... params) {
 
         SimWifiP2pSocket socket;
         try{
@@ -33,11 +39,14 @@ public class SendTask extends AsyncTask<String, String, Void> {
 
         try {
             OutputStream out = socket.getOutputStream();
-            out.write((msg[0]+"\n").getBytes());
-            Log.d("SendTask","Sending: "+msg[0]);
+
+            String profile = Session.getInstance().getProfile();
+
+            out.write((profile+"\n").getBytes());
+            Log.d("SendTask","Sending keys "+profile);
             BufferedReader sockIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String response = sockIn.readLine();
-            Log.d("SendTask","Response: "+response);
+            Log.d("SendTask","Response "+response);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

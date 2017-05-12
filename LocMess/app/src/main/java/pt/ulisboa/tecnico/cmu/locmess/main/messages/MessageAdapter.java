@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
@@ -33,6 +35,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
     public MessageAdapter(Context context, List<MessageModel> list){
         super(context, R.layout.layout_messages);
         this.list = list;
+        notifyDataSetChanged();
         this.msgType = "All";
     }
 
@@ -50,7 +53,17 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         notifyDataSetChanged();
     }
 
-
+    @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
+        Log.d("MessageAdapter","notifyDataSetChanged to shared prefs");
+        try{
+            Session.getInstance().saveMsgs(list);
+        }
+        catch (Exception e){
+            Log.d("MessageAdapter","notifyDataSetChanged error!");
+        }
+    }
 
 
     @Override

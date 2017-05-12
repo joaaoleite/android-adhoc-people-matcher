@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmu.locmess.main.profile;
 
 import android.view.View;
 
+import org.json.JSONObject;
+
 public class PairModel {
 
     private String key;
@@ -34,5 +36,17 @@ public class PairModel {
 
     public boolean isSelected(){
         return this.selected;
+    }
+
+    public JSONObject toJSON(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("key", key);
+            json.put("value", value);
+            return json;
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 }

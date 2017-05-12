@@ -35,6 +35,7 @@ import java.util.HashMap;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 
@@ -231,6 +232,7 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
                                     .position(point)
                                     .title(location.getName()));
                             alertDialogAndroid.dismiss();
+                            Session.getInstance().updateLocations();
                         }
                         else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
                         alertDialogAndroid.dismiss();

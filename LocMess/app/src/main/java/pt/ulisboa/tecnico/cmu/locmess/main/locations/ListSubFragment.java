@@ -39,6 +39,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 
@@ -312,6 +313,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                             int size = adapter.getCount();
                             ListView l = (ListView)container.findViewById(R.id.locationslist);
                             if(l!=null) l.smoothScrollToPosition(size);
+                            Session.getInstance().updateLocations();
                         }
                         else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
                         alertDialogAndroid.dismiss();

@@ -2,11 +2,18 @@ package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 
 import android.view.View;
+import android.widget.ArrayAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class MessageModel {
     private String location;
@@ -111,7 +118,29 @@ public class MessageModel {
     public void setContent(String value){ this.content = value; }
 
 
+    public JSONObject toJSON(){
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject l = new JSONObject();
+            obj.put("location", location);
+            obj.put("user", user);
+            obj.put("subject", subject);
+            obj.put("policy", policy);
 
+            JSONObject f = new JSONObject();
+            for(int i=0; i<filter.size(); i++)
+                f.put(filter.get(i).getKey(),filter.get(i).getValue());
+
+            obj.put("filter",f);
+            obj.put("start", start);
+            obj.put("end", end);
+            obj.put("content", content);
+            obj.put("id", id);
+            obj.put("msgType", msgType);
+        }catch (JSONException e){ }
+
+        return obj;
+    }
 
 
     public boolean toogle(){
