@@ -21,25 +21,29 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
 
         try {
             mSrvSocket = new SimWifiP2pSocketServer(10001);
+            Log.d("WifiDirect", "Socket open!");
         } catch (IOException e) {
+            Log.d("ReceivingTask","Error open server...");
             e.printStackTrace();
         }
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 SimWifiP2pSocket sock = mSrvSocket.accept();
+                Log.d("WifiDirect", "receiving accept");
                 try {
                     BufferedReader sockIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                    String st = sockIn.readLine();
-                    publishProgress(st);
-                    Log.d("WifiDirect","Message received: "+st);
-                    sock.getOutputStream().write(("\n").getBytes());
+                    Log.d("ReceivingTask","sockIn");
+                    String received = sockIn.readLine();
+                    Log.d("ReceivingTask","Message received: "+received);
+                    sock.getOutputStream().write(("OK\n").getBytes());
+                    Log.d("ReceivingTask","Message sent: OK");
                 } catch (IOException e) {
-                    Log.d("Error reading socket:", e.getMessage());
+                    Log.d("WifiDirect", "Error socket: "+e.getMessage());
                 } finally {
                     sock.close();
                 }
             } catch (IOException e) {
-                Log.d("Error socket:", e.getMessage());
+                Log.d("WifiDirect", "Error socket: "+e.getMessage());
                 break;
             }
         }

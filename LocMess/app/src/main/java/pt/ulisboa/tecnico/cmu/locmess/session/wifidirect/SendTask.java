@@ -33,7 +33,12 @@ public class SendTask extends AsyncTask<String, String, Void> {
 
         try {
             OutputStream out = socket.getOutputStream();
-            out.write(msg[0].getBytes());
+            out.write((msg[0]+"\n").getBytes());
+            Log.d("SendTask","Sending: "+msg[0]);
+            BufferedReader sockIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String response = sockIn.readLine();
+            Log.d("SendTask","Response: "+response);
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

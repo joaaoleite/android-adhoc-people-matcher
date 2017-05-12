@@ -83,23 +83,27 @@ public class WifiDirect implements GroupInfoListener {
             if(device!=null) {
                 String deviceIP = device.getVirtIp();
                 newDevices.add(deviceIP);
-                Log.d("WifiDirect","new device: "+deviceName+" "+deviceIP);
+                Log.d("WifiDirect","Device available "+deviceName+" "+deviceIP);
             }
         }
         for(String ip: newDevices) {
             if (!nearbyDevices.contains(ip)) {
+                Log.d("WifiDirect","New device added "+ip);
                 nearbyDevices.add(ip);
                 sendData(ip);
             }
         }
 
-        for(String ip: nearbyDevices)
-            if(!newDevices.contains(ip))
+        for(String ip: nearbyDevices) {
+            if (!newDevices.contains(ip)) {
+                Log.d("WifiDirect", "Device removed: " + ip);
                 nearbyDevices.remove(ip);
+            }
+        }
     }
 
     public void sendData(String ip){
-        String data = "Example message from: "+ip;
+        String data = "Example message from "+ip;
         new SendTask(ip).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,data);
     }
 
