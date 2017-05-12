@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -39,7 +40,7 @@ import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 
-public class MapSubFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+public class MapSubFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private static MapSubFragment singleton;
     private GoogleMap map;
@@ -108,14 +109,17 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getActivity(),
                         android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("Location","Location access true");
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
 
             LocationManager manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             String bestProvider = String.valueOf(manager.getBestProvider(new Criteria(), true));
+            manager.requestLocationUpdates(bestProvider, 10000, 1, this);
             Location myLocation = manager.getLastKnownLocation(bestProvider);
 
             if(myLocation==null) {
+                Log.d("Location","myLocation=null");
                 myLocation = new Location(LocationManager.GPS_PROVIDER);
                 myLocation.setLatitude(38.7);
                 myLocation.setLongitude(-9.3);
@@ -124,6 +128,7 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
 
 
         } else {
+            Log.d("Location","Location access false");
             ActivityCompat.requestPermissions(getActivity(), new String[] {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -253,4 +258,15 @@ public class MapSubFragment extends Fragment implements OnMapReadyCallback, Goog
         String pattern= "^[a-zA-Z0-9 ]+$";
         return text.matches(pattern);
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14));
+    }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    @Override
+    public void onProviderEnabled(String provider) {}
+    @Override
+    public void onProviderDisabled(String provider) {}
 }

@@ -14,9 +14,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.support.v4.app.NotificationCompat;
@@ -48,12 +50,15 @@ import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.SimWifiP2pBroadcastReceiver;
 import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.WifiDirect;
 
-public class LocMessService extends Service {
+public class LocMessService extends Service implements LocationListener{
 
     private BroadcastReceiver receiver;
     private HashMap<String,ScanResult> ssids;
     private Location location;
     private boolean givingLocation = false;
+
+    private LocationManager manager;
+    private String bestProvider;
 
     private static Context context;
     public static Context getContext(){
@@ -67,6 +72,7 @@ public class LocMessService extends Service {
             Log.d("Service","background");
 
             WifiDirect wifiDirect = new WifiDirect(LocMessService.this);
+
 
             while(true) {
                 try {
@@ -94,6 +100,16 @@ public class LocMessService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Service","onStartCommand");
+
+        try{
+            if(checkPermissions()) {
+                manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                bestProvider = String.valueOf(manager.getBestProvider(new Criteria(), true));
+                manager.requestLocationUpdates(bestProvider, 10000, 1, LocMessService.this);
+            }
+        }catch (SecurityException e){}
+
+
         new Thread(background).start();
         return START_STICKY;
     }
@@ -110,10 +126,9 @@ public class LocMessService extends Service {
     private void getLocation(){
         Log.d("Service","getLocation");
         if(checkPermissions()){
-            LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            String bestProvider = String.valueOf(manager.getBestProvider(new Criteria(), true));
             try {
                 location = manager.getLastKnownLocation(bestProvider);
+                Log.d("Service","getLocation="+location.getLatitude()+","+location.getLongitude());
                 if(!givingLocation) giveLocation();
             }
             catch (SecurityException e){ }
@@ -253,5 +268,25 @@ public class LocMessService extends Service {
                     .setContentIntent(pendingIntent).setAutoCancel(true);
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(new Random().nextInt(), mBuilder.build());
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
