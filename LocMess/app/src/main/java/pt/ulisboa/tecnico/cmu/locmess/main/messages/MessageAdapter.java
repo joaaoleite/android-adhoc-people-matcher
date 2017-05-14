@@ -40,6 +40,9 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         if(Session.getInstance().getMsgsReceived()!=null)
             this.list.addAll(Session.getInstance().getMsgsReceived());
 
+        if(Session.getInstance().getMsgsSent()!=null)
+            this.list.addAll(Session.getInstance().getMsgsSent());
+
         notifyDataSetChanged();
         this.msgType = "All";
     }
@@ -62,26 +65,22 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
     public void notifyDataSetChanged(){
         super.notifyDataSetChanged();
         Log.d("MessageAdapter","notifyDataSetChanged to shared prefs");
-        try{
-            Session.getInstance().saveMsgs(list);
-        }
-        catch (Exception e){
-            Log.d("MessageAdapter","notifyDataSetChanged error!");
-        }
     }
 
 
     @Override
     public MessageModel getItem(int position){
         int i = 0;
-        for(MessageModel m : list) {
-            if(m.getMsgType().equals(msgType) || msgType.equals("All")) {
-                if(position == i) {
-                    return m;
+        try {
+            for (MessageModel m : list) {
+                if (m.getMsgType().equals(msgType) || msgType.equals("All")) {
+                    if (position == i) {
+                        return m;
+                    }
+                    i++;
                 }
-                i++;
             }
-        }
+        }catch (NullPointerException e){}
         return null;
     }
 

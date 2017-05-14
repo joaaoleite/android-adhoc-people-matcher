@@ -80,10 +80,11 @@ public class Session {
             return null;
     }
 
-    public void token(String newToken){
+    public void token(String newToken, String username){
         if(newToken != null){
             SharedPreferences.Editor editor = editor();
             editor.clear();
+            editor.putString("username",username);
             editor.putBoolean("login", true);
             editor.putString("token", newToken);
             editor.apply();
@@ -165,6 +166,30 @@ public class Session {
             JSONArray res = new JSONArray();
 
             for(int i=0; i<json.length(); i++)
+                if(!json.getJSONObject(i).getString("id").equals(id)) {
+                    res.put(json.getJSONObject(i));
+                }
+                else{
+                    Log.d("Session","deleteMsg = "+json.getJSONObject(i));
+                }
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messages", res.toString());
+            editor.commit();
+            Log.d("Session","delete message complete "+json);
+        }
+        catch (Exception e){
+            Log.d("Session","deleteMsg1",e);
+        }
+
+        try{
+            String messages = prefs.getString("received",new JSONArray().toString());
+            JSONObject obj = new JSONObject("{\"messages\":"+messages+"}");
+            JSONArray json = obj.getJSONArray("messages");
+
+            JSONArray res = new JSONArray();
+
+            for(int i=0; i<json.length(); i++)
                 if(!json.getJSONObject(i).getString("id").equals(id))
                     res.put(json.getJSONObject(i));
 
@@ -173,7 +198,9 @@ public class Session {
             editor.commit();
             Log.d("Session","delete message complete "+json);
         }
-        catch (Exception e){}
+        catch (Exception e){
+            Log.d("Session","deleteMsg2",e);
+        }
     }
 
     public void saveMsg(MessageModel message){
@@ -188,11 +215,12 @@ public class Session {
             editor.putString("messages", json.toString());
             editor.commit();
             Log.d("Session","save message complete: "+json);
+
         }
         catch (Exception e){}
     }
 
-    public ArrayList<MessageModel> getMsgs(){
+    public ArrayList<MessageModel> getMsgsSent(){
         try{
             String messages = prefs.getString("messages",new JSONArray().toString());
             JSONObject obj = new JSONObject("{\"messages\":"+messages+"}");
@@ -226,7 +254,7 @@ public class Session {
         }
         catch (Exception e){
             Log.d("Session","getMsgsReceived",e);
-            return null;
+            return new ArrayList<>();
         }
     }
 

@@ -1,4 +1,8 @@
 
+# Intellij IDEA
+.idea/
+*.iml
+
 # Termite-Cli
 Termite-Cli/
 

@@ -362,7 +362,7 @@ public class MessageCreator extends AppCompatActivity {
                     if(mode.equals("Decentralized")){
 
                         SecureRandom random = new SecureRandom();
-                        String id = new BigInteger(20, random).toString(32);
+                        String id = new BigInteger(200, random).toString(32);
                         String user = Session.getInstance().me();
 
                         ArrayList<PairModel> pairs = new ArrayList<>();

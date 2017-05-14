@@ -37,7 +37,9 @@ public class Routes{
                 String username = params.value("username");
                 String password = params.value("password");
                 if(username == null || password == null) return Response.ERROR;
-                return Response.createJSON("token", Database.Users().logIn(username, password));
+                JSONObject res = Response.createJSON("token", Database.Users().logIn(username, password));
+                res.put("username",username);
+                return res;
             }
             catch(Exception e){
                 return Response.ERROR;

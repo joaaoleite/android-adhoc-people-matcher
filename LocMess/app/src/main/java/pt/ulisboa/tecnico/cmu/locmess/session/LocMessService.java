@@ -267,6 +267,7 @@ public class LocMessService extends Service implements LocationListener{
             end = end.split(" ")[1] + " " + end.split(" ")[2] + " " + end.split(" ")[5] + " at " + end.split(" ")[3].split(":")[0] + ":" + end.split(" ")[3].split(":")[1];
             intent.putExtra("start", start);
             intent.putExtra("end", end);
+            intent.putExtra("mode",msg.getMode());
 
             intent.putExtra("position", 0);
 

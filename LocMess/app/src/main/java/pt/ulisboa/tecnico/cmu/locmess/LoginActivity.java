@@ -84,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(JSONObject res){
                 try{
                     String token = res.getString("token");
-                    Session.getInstance().token(token);
+                    String username = res.getString("username");
+                    Session.getInstance().token(token,username);
                     if(token!=null) {
                         loadingDialog(false);
                         Intent intent = new Intent(singleton, MainActivity.class);
