@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
@@ -36,8 +37,8 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         super(context, R.layout.layout_messages);
 
         this.list = list;
-        if(Session.getInstance().getMsgs()!=null)
-            this.list.addAll(Session.getInstance().getMsgs());
+        if(Session.getInstance().getMsgsReceived()!=null)
+            this.list.addAll(Session.getInstance().getMsgsReceived());
 
         notifyDataSetChanged();
         this.msgType = "All";
@@ -116,13 +117,26 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
             String policy = msg.getString("policy");
             String id = msg.getString("id");
 
-            Calendar start = Calendar.getInstance();
-            String[] s = msg.getString("start").split(" ");
-            start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5] + "-" + s[1] + "-" + s[2] + " " + s[3]));
-            Calendar end = Calendar.getInstance();
-            String[] e = msg.getString("end").split(" ");
-            end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5] + "-" + e[1] + "-" + e[2] + " " + e[3]));
 
+            Calendar start = Calendar.getInstance();
+            Calendar end = Calendar.getInstance();
+
+            try {
+                String[] s = msg.getString("start").split(" ");
+                start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5] + "-" + s[1] + "-" + s[2] + " " + s[3]));
+                String[] e = msg.getString("end").split(" ");
+                end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5] + "-" + e[1] + "-" + e[2] + " " + e[3]));
+            }
+            catch (Exception e){
+                try{
+                    start.setTime(new Date(msg.getLong("start")));
+                    end.setTime(new Date(msg.getLong("end")));
+                }
+                catch (Exception e2){
+                    start.setTime(new Date());
+                    end.setTime(new Date());
+                }
+            }
             ArrayList<PairModel> pairs = new ArrayList<>();
             JSONObject tags = msg.getJSONObject("keys");
             if (tags != null) {
@@ -135,7 +149,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
             }
         }
         catch (JSONException e) { }
-        catch (ParseException e){ }
+
         return null;
     }
 

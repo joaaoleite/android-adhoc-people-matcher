@@ -55,6 +55,7 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
                     sock.close();
                 }
             } catch (IOException e) {
+                Log.d("ReceivingTask","doInBackground",e);
                 Log.d("WifiDirect", "Error socket: "+e.getMessage());
                 break;
             }
@@ -90,8 +91,8 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
                 JSONObject json2 = new JSONObject("{\"locations\":"+locations+"}");
                 JSONArray locs = json2.getJSONArray("locations");
                 for(int l=0; l<locs.length(); l++){
-                    if(locs.getJSONObject(l).getString("name").equals(msg.getString("name"))){
-                        JSONObject loc = locs.getJSONObject(i);
+                    if(locs.getJSONObject(l).getString("name").equals(msg.getString("location"))){
+                        JSONObject loc = locs.getJSONObject(l);
                         if(loc.has("ssid")) {
                             if(matchWifi(loc.getString("ssid"))){
                                 res.put(msg);
@@ -106,6 +107,7 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
             }
             return res;
         }catch (Exception e){
+            Log.d("ReceivingTask","msgsNow",e);
             return new JSONArray();
         }
     }
@@ -142,6 +144,7 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
             return res;
         }
         catch (JSONException e){
+            Log.d("ReceivingTask","getMsgs",e);
             return new JSONArray();
         }
     }

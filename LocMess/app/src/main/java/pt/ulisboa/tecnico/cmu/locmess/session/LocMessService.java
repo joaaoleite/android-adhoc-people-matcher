@@ -62,6 +62,7 @@ public class LocMessService extends Service implements LocationListener{
     private String bestProvider;
 
     private static Context context;
+    private static LocMessService singleton;
     public static Context getContext(){
         return context;
     }
@@ -98,6 +99,7 @@ public class LocMessService extends Service implements LocationListener{
         context = getApplicationContext();
         prefs = getSharedPreferences(Session.APP_NAME,context.MODE_PRIVATE);
         Log.d("Service","onCreate");
+        singleton = this;
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -207,10 +209,9 @@ public class LocMessService extends Service implements LocationListener{
             }.execute();
         }
     }
-    private void message(JSONObject msg){
+    public static void message(JSONObject msg){
+        Log.d("LocMessService","message "+msg.toString());
         try{
-
-            SharedPreferences prefs = getSharedPreferences(Session.APP_NAME, MODE_PRIVATE);
 
             Set<String> set = prefs.getStringSet("received", null);
             if(set==null) set = new HashSet<String>();
@@ -230,47 +231,58 @@ public class LocMessService extends Service implements LocationListener{
                     mf.adapter.insertItem(msg);
                 }
             }
-            launchNotification(msg);
+            Log.d("LocMessService","singleton.launchNotification(msg)" );
+            singleton.launchNotification(msg);
         }
-        catch (JSONException e){ }
+        catch (Exception e){
+            Log.d("LocMessService","message",e);
+        }
     }
 
     // Launch  notification
     public void launchNotification(JSONObject message) {
 
-        MessageModel msg = MessageAdapter.parse(message,"Received");
-        final Intent intent = new Intent(this, MessageViewer.class);
-        intent.putExtra("user", msg.getUser());
-        intent.putExtra("subject", msg.getContent());
-        intent.putExtra("content", msg.getContent());
-        intent.putExtra("type", msg.getMsgType());
-        intent.putExtra("location", msg.getContent());
-        intent.putExtra("policy", msg.getPolicy());
+        Log.d("LocMessService","launchNotification "+message);
 
-        String filter = "";
-        for (int i = 0; i < msg.getFilter().size(); i++){
-            filter = filter + msg.getFilter().get(i).getKey()+ " - " + msg.getFilter().get(i).getValue() + "\n";
+        try {
+            MessageModel msg = new MessageModel(message);
+
+            final Intent intent = new Intent(this, MessageViewer.class);
+            intent.putExtra("user", msg.getUser());
+            intent.putExtra("subject", msg.getContent());
+            intent.putExtra("content", msg.getContent());
+            intent.putExtra("type", msg.getMsgType());
+            intent.putExtra("location", msg.getContent());
+            intent.putExtra("policy", msg.getPolicy());
+
+            String filter = "";
+            for (int i = 0; i < msg.getFilter().size(); i++) {
+                filter = filter + msg.getFilter().get(i).getKey() + " - " + msg.getFilter().get(i).getValue() + "\n";
+            }
+            intent.putExtra("filter", filter);
+
+            String start = msg.getStart().getTime() + "";
+            String end = msg.getEnd().getTime() + "";
+            start = start.split(" ")[1] + " " + start.split(" ")[2] + " " + start.split(" ")[5] + " at " + start.split(" ")[3].split(":")[0] + ":" + start.split(" ")[3].split(":")[1];
+            end = end.split(" ")[1] + " " + end.split(" ")[2] + " " + end.split(" ")[5] + " at " + end.split(" ")[3].split(":")[0] + ":" + end.split(" ")[3].split(":")[1];
+            intent.putExtra("start", start);
+            intent.putExtra("end", end);
+
+            intent.putExtra("position", 0);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentTitle("New message received!")
+                            .setContentText("From: " + msg.getUser())
+                            .setContentIntent(pendingIntent).setAutoCancel(true);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.notify(new Random().nextInt(), mBuilder.build());
         }
-        intent.putExtra("filter",filter);
-
-        String start = msg.getStart().getTime()+"";
-        String end = msg.getEnd().getTime()+"";
-        start = start.split(" ")[1]+" "+start.split(" ")[2]+" "+start.split(" ")[5]+" at "+start.split(" ")[3].split(":")[0]+":"+start.split(" ")[3].split(":")[1];
-        end = end.split(" ")[1]+" "+end.split(" ")[2]+" "+end.split(" ")[5]+" at "+end.split(" ")[3].split(":")[0]+":"+end.split(" ")[3].split(":")[1];
-        intent.putExtra("start", start);
-        intent.putExtra("end", end);
-
-        intent.putExtra("position", 0);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
-        NotificationCompat.Builder mBuilder =
-            new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("New message received!")
-                    .setContentText("From: "+msg.getUser())
-                    .setContentIntent(pendingIntent).setAutoCancel(true);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(new Random().nextInt(), mBuilder.build());
+        catch (Exception e){
+            Log.d("LocMessService","launchNotification",e);
+        }
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -205,6 +206,26 @@ public class Session {
         }
         catch (Exception e){
             Log.d("Session","getMsgs",e);
+            return null;
+        }
+    }
+
+    public ArrayList<MessageModel> getMsgsReceived(){
+        try{
+            Set<String> messages = prefs.getStringSet("received",null);
+
+            ArrayList<MessageModel> res = new ArrayList<>();
+            for(String msg : messages){
+                try {
+                    res.add(new MessageModel(new JSONObject(msg)));
+                }
+                catch (JSONException e){}
+            }
+            Log.d("Session","getMsgsReceived");
+            return res;
+        }
+        catch (Exception e){
+            Log.d("Session","getMsgsReceived",e);
             return null;
         }
     }

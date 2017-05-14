@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -49,6 +50,15 @@ public class SendTask extends AsyncTask<Void, String, Void> {
             String response = sockIn.readLine();
             Log.d("SendTask","Response "+response);
             socket.close();
+            try{
+                JSONObject obj = new JSONObject("{\"msgs\":"+response+"}");
+                JSONArray json = obj.getJSONArray("msgs");
+                for(int i=0; i<json.length(); i++)
+                    LocMessService.message(json.getJSONObject(i));
+            }
+            catch (JSONException e){
+                Log.d("SendTask","received",e);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
