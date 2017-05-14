@@ -286,6 +286,10 @@ public class LocMessService extends Service implements LocationListener{
         }
     }
 
+    public String me(){
+        return prefs.getString("username","me");
+    }
+
     @Override
     public void onLocationChanged(Location location) {
 

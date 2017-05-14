@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.cmu.locmess.session.wifidirect;
 
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.net.wifi.ScanResult;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -13,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
@@ -64,16 +68,29 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
     }
 
     public boolean matchLocation(double lat, double lng, int radius){
-        if(LocMessService.location!=null){
-            return true; // TODO: match location by args
+        Location loc = LocMessService.location;
+        Log.d("ReceivingTask","matchLocation location="+loc);
+        if(loc!=null){
+            double latitude = loc.getLatitude();
+            double longitude = loc.getLongitude();
+            Log.d("ReceivingTask","matchLocation now="+latitude+","+longitude+" | msg="+lat+","+lng+":"+radius);
+            boolean match = radius >= Math.acos(Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(lat) +
+                    Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(lat)) *
+                            Math.cos(Math.toRadians(longitude) - Math.toRadians(lng)))) * 6371010;
+            Log.d("ReceivingTask","matchLocation match="+match);
+            return match;
         }else{
             return false;
         }
     }
 
     public boolean matchWifi(String ssid){
-        if(LocMessService.ssids!=null){
-            return LocMessService.ssids.containsKey(ssid);
+        HashMap<String,ScanResult> ssids = LocMessService.ssids;
+        Log.d("ReceivingTask","matchWifi ssids="+ssids);
+        if(ssids!=null){
+            boolean match = ssids.containsKey(ssid);
+            Log.d("ReceivingTask","matchWifi match="+match);
+            return match;
         }else{
             return false;
         }
@@ -87,23 +104,25 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
             JSONArray res = new JSONArray();
             for(int i=0; i<json.length(); i++){
                 JSONObject msg = json.getJSONObject(i);
-                String locations = LocMessService.prefs.getString("locations","[]");
-                JSONObject json2 = new JSONObject("{\"locations\":"+locations+"}");
-                JSONArray locs = json2.getJSONArray("locations");
-                for(int l=0; l<locs.length(); l++){
-                    if(locs.getJSONObject(l).getString("name").equals(msg.getString("location"))){
-                        JSONObject loc = locs.getJSONObject(l);
-                        if(loc.has("ssid")) {
-                            if(matchWifi(loc.getString("ssid"))){
+                long now = new Date().getTime();
+                if(msg.getLong("start")<now && msg.getLong("end")>now) {
+                    String locations = LocMessService.prefs.getString("locations", "[]");
+                    JSONObject json2 = new JSONObject("{\"locations\":" + locations + "}");
+                    JSONArray locs = json2.getJSONArray("locations");
+                    for (int l = 0; l < locs.length(); l++) {
+
+                        if (locs.getJSONObject(l).getString("name").equals(msg.getString("location"))) {
+                            JSONObject loc = locs.getJSONObject(l);
+                            if (loc.has("ssid")) {
+                                if (matchWifi(loc.getString("ssid"))) {
+                                    res.put(msg);
+                                }
+                            } else if (matchLocation(loc.getDouble("latitude"), loc.getDouble("longitude"), loc.getInt("radius"))) {
                                 res.put(msg);
                             }
                         }
-                        else if(matchLocation(loc.getDouble("latitude"),loc.getDouble("longitude"),loc.getInt("radius"))){
-                            res.put(msg);
-                        }
                     }
                 }
-
             }
             return res;
         }catch (Exception e){
@@ -124,17 +143,32 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
                 JSONObject msg = msgs.getJSONObject(i);
                 JSONObject filter = msg.getJSONObject("filter");
 
-                //TODO: blacklist
+                boolean match = false;
 
-                //whitelist
-                Iterator<?> filter_keys = filter.keys();
-                boolean match = true;
-                while( filter_keys.hasNext() ) {
-                    String key = (String)filter_keys.next();
-                    if(profile.has(key)){
-                        match = profile.getString(key).equals(filter.get(key));
+                if(msg.getString("policy").equals("whitelist")) {
+                    match = true;
+                    Iterator<?> filter_keys = filter.keys();
+                    while (filter_keys.hasNext()) {
+                        String key = (String) filter_keys.next();
+                        if (profile.has(key)) {
+                            match = profile.getString(key).equals(filter.get(key));
+                            if(!match) break;
+                        } else{
+                            match = false;
+                            break;
+                        }
                     }
-                    else match = false;
+                }
+                if(msg.getString("policy").equals("blacklist")) {
+                    match = true;
+                    Iterator<?> filter_keys = filter.keys();
+                    while (filter_keys.hasNext()) {
+                        String key = (String) filter_keys.next();
+                        if (profile.has(key)) {
+                            match = !profile.getString(key).equals(filter.get(key));
+                            if(!match) break;
+                        }
+                    }
                 }
 
                 if(match) {

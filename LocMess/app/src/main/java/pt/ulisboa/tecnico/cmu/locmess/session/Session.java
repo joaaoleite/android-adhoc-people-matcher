@@ -97,6 +97,7 @@ public class Session {
     public void logout(){
         SharedPreferences.Editor editor = editor();
         editor.clear();
+        editor.putString("username",null);
         editor.putBoolean("login",false);
         editor.putString("token",null);
         editor.apply();
@@ -125,7 +126,7 @@ public class Session {
     }
 
     public String me(){
-        return "me"; //TODO: who am I???
+       return prefs.getString("username","me");
     }
 
     public String getLocations(){ return prefs.getString("locations",null); }
