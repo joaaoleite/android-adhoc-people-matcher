@@ -122,6 +122,10 @@ public class Session {
         }.execute();
     }
 
+    public String me(){
+        return "me"; //TODO: who am I???
+    }
+
     public String getLocations(){ return prefs.getString("locations",null); }
 
     public String getProfile(){
@@ -148,6 +152,60 @@ public class Session {
             editor.commit();
 
             Log.d("Session", "save pairs complete: " + json);
+        }
+    }
+
+    public void deleteMsg(String id){
+        try{
+            String messages = prefs.getString("messages",new JSONArray().toString());
+            JSONObject obj = new JSONObject("{\"messages\":"+messages+"}");
+            JSONArray json = obj.getJSONArray("messages");
+
+            JSONArray res = new JSONArray();
+
+            for(int i=0; i<json.length(); i++)
+                if(!json.getJSONObject(i).getString("id").equals(id))
+                    res.put(json.getJSONObject(i));
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messages", res.toString());
+            editor.commit();
+            Log.d("Session","delete message complete "+json);
+        }
+        catch (Exception e){}
+    }
+
+    public void saveMsg(MessageModel message){
+        try{
+            String messages = prefs.getString("messages",new JSONArray().toString());
+            JSONObject obj = new JSONObject("{\"messages\":"+messages+"}");
+            JSONArray json = obj.getJSONArray("messages");
+            if(messages!=null)
+                json.put(message.toJSON());
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messages", json.toString());
+            editor.commit();
+            Log.d("Session","save message complete: "+json);
+        }
+        catch (Exception e){}
+    }
+
+    public ArrayList<MessageModel> getMsgs(){
+        try{
+            String messages = prefs.getString("messages",new JSONArray().toString());
+            JSONObject obj = new JSONObject("{\"messages\":"+messages+"}");
+            JSONArray json = obj.getJSONArray("messages");
+            ArrayList<MessageModel> msgs = new ArrayList<>();
+            for(int i=0; i<json.length(); i++){
+                msgs.add(new MessageModel(json.getJSONObject(i)));
+            }
+            Log.d("Session","getMsgs");
+            return msgs;
+        }
+        catch (Exception e){
+            Log.d("Session","getMsgs",e);
+            return null;
         }
     }
 

@@ -34,7 +34,11 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
     public MessageAdapter(Context context, List<MessageModel> list){
         super(context, R.layout.layout_messages);
+
         this.list = list;
+        if(Session.getInstance().getMsgs()!=null)
+            this.list.addAll(Session.getInstance().getMsgs());
+
         notifyDataSetChanged();
         this.msgType = "All";
     }

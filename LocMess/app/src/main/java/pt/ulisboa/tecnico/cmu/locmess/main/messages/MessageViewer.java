@@ -26,6 +26,7 @@ public class MessageViewer extends AppCompatActivity {
         setContentView(R.layout.activity_message_viewer);
 
         TextView user = (TextView) findViewById(R.id.messageUser);
+        TextView mode = (TextView) findViewById(R.id.mode);
         TextView subject = (TextView) findViewById(R.id.messageSubject);
         TextView content = (TextView) findViewById(R.id.messageContent);
         TextView location = (TextView) findViewById(R.id.messageLocation);
@@ -38,6 +39,7 @@ public class MessageViewer extends AppCompatActivity {
         Intent myIntent = getIntent();
         user.setText(myIntent.getStringExtra("user"));
         subject.setText(myIntent.getStringExtra("subject"));
+        mode.setText(myIntent.getStringExtra("mode"));
         content.setText(myIntent.getStringExtra("content"));
             location.setText(myIntent.getStringExtra("location"));
             policy.setText(myIntent.getStringExtra("policy"));

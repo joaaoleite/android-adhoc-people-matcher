@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 import android.app.DatePickerDialog;
+import android.app.Notification;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +28,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,6 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
 public class MessageCreator extends AppCompatActivity {
@@ -185,6 +192,13 @@ public class MessageCreator extends AppCompatActivity {
         });
 
 
+        final Spinner modeSpinner = (Spinner) findViewById(R.id.delivery_mode);
+        String[] modeArray = new String[]{"Centralized","Decentralized"};
+        ArrayAdapter<CharSequence> modeAdapter = new ArrayAdapter<CharSequence>
+                (getApplicationContext(), R.layout.spinner_wifi_item,modeArray);
+        modeSpinner.setAdapter(modeAdapter);
+
+
         final Spinner locSpinner = (Spinner) findViewById(R.id.location);
 
         new Request("GET","/locations"){
@@ -310,39 +324,62 @@ public class MessageCreator extends AppCompatActivity {
 
                     String policy = polSpinner.getSelectedItem().toString();
                     String location = locSpinner.getSelectedItem().toString();
-
+                    String mode = modeSpinner.getSelectedItem().toString();
                     String content = contentView.getText().toString();
 
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put("start", start.getTime()+"");
-                    params.put("end", end.getTime()+"");
-                    params.put("policy", policy);
-                    params.put("location", location);
-                    params.put("content", content);
+                    if(mode.equals("Centralized")) {
 
-                    int m = 1;
-                    for (Map.Entry<String, String> entry : pairsMap.entrySet()) {
-                        params.put("key" + m, entry.getKey());
-                        params.put("value" + m, entry.getValue());
-                        m++;
-                    }
+                        HashMap<String, String> params = new HashMap<String, String>();
+                        params.put("start", start.getTime() + "");
+                        params.put("end", end.getTime() + "");
+                        params.put("policy", policy);
+                        params.put("location", location);
+                        params.put("content", content);
 
-                    new Request("POST", "/messages", params) {
-                        @Override
-                        public void onResponse(JSONObject json) throws JSONException {
-                            if(json.getString("status").equals("ok")){
-                                getIntent().putExtra("creator", true);
-                                setResult(RESULT_OK, getIntent());
-                                finish();
+                        int m = 1;
+                        for (Map.Entry<String, String> entry : pairsMap.entrySet()) {
+                            params.put("key" + m, entry.getKey());
+                            params.put("value" + m, entry.getValue());
+                            m++;
+                        }
+
+                        new Request("POST", "/messages", params) {
+                            @Override
+                            public void onResponse(JSONObject json) throws JSONException {
+                                if (json.getString("status").equals("ok")) {
+                                    getIntent().putExtra("creator", true);
+                                    setResult(RESULT_OK, getIntent());
+                                    finish();
+                                } else dialogAlert("Error posting message to server!");
                             }
-                            else dialogAlert("Error posting message to server!");
-                        }
 
-                        @Override
-                        public void onError(String error) {
-                            dialogAlert("Error posting message to server!");
-                        }
-                    }.execute();
+                            @Override
+                            public void onError(String error) {
+                                dialogAlert("Error posting message to server!");
+                            }
+                        }.execute();
+                    }
+                    if(mode.equals("Decentralized")){
+
+                        SecureRandom random = new SecureRandom();
+                        String id = new BigInteger(20, random).toString(32);
+                        String user = Session.getInstance().me();
+
+                        ArrayList<PairModel> pairs = new ArrayList<>();
+                        for (Map.Entry<String, String> entry : pairsMap.entrySet())
+                            pairs.add(new PairModel(entry.getKey(),entry.getValue()));
+
+                        Calendar start_cal = Calendar.getInstance();
+                        start_cal.setTime(start);
+                        Calendar end_cal = Calendar.getInstance();
+                        end_cal.setTime(end);
+
+                        MessageModel message = new MessageModel("decentralized",id,location, user,content, policy, pairs, start_cal, end_cal);
+                        Session.getInstance().saveMsg(message);
+                        getIntent().putExtra("creator", true);
+                        setResult(RESULT_OK, getIntent());
+                        finish();
+                    }
                 }catch (Exception e){
                     Log.d("MessageCreator","ex: "+e.toString());
                     dialogAlert("Error parsing input fields!");

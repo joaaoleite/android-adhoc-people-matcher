@@ -12,6 +12,7 @@
     <string name="title_locations">Locations</string>
     <string name="title_messages">Messages</string>
     <string name="prompt_text">Locations</string>
+    <string name="delivery_mode">Delivery Mode</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment2</string>

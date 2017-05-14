@@ -36,11 +36,12 @@ public class SendTask extends AsyncTask<Void, String, Void> {
             e.printStackTrace();
             return null;
         }
+        if(socket==null) return null;
 
         try {
             OutputStream out = socket.getOutputStream();
 
-            String profile = Session.getInstance().getProfile();
+            String profile = LocMessService.prefs.getString("profile","{}");
 
             out.write((profile+"\n").getBytes());
             Log.d("SendTask","Sending keys "+profile);

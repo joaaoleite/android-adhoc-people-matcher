@@ -103,7 +103,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         final ArrayList<MessageModel> messagesList = new ArrayList<>();
 
         SharedPreferences prefs = getActivity().getSharedPreferences(Session.APP_NAME,Context.MODE_PRIVATE);
-        Set<String> received = prefs.getStringSet("messages",null);
+        Set<String> received = prefs.getStringSet("received",null);
         if(received!=null){
             for (Iterator<String> it = received.iterator(); it.hasNext(); ) {
                 String msg = it.next();
@@ -174,6 +174,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         MessageModel message = adapter.getItem(position);
 
         String user = message.getUser();
+        String mode = message.getMode();
         String subject = message.getSubject();
         String content = message.getContent();
         String msgType = message.getMsgType();
@@ -192,6 +193,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
 
         Intent intent = new Intent(view.getContext(), MessageViewer.class);
         intent.putExtra("user", user);
+        intent.putExtra("mode",mode);
         intent.putExtra("subject", subject);
         intent.putExtra("content", content);
         intent.putExtra("type", msgType);
@@ -209,16 +211,21 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public void deleteClicked() { }
 
     public void deleteMessageOnServer(MessageModel message){
-        new Request("DELETE","/messages/"+message.getId()){
-            @Override
-            public void onResponse(JSONObject json) throws JSONException {
+        if(message.getMode().equals("decentralized")){
+            Session.getInstance().deleteMsg(message.getId());
+        }else {
+            new Request("DELETE", "/messages/" + message.getId()) {
+                @Override
+                public void onResponse(JSONObject json) throws JSONException {
 
-            }
-            @Override
-            public void onError(String error) {
+                }
 
-            }
-        }.execute();
+                @Override
+                public void onError(String error) {
+
+                }
+            }.execute();
+        }
     }
 
     @Override

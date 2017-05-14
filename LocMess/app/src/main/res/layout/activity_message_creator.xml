@@ -167,6 +167,22 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Delivery mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/delivery_mode"
+                android:prompt="@string/delivery_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <Button
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/common_google_signin_btn_text_dark"

@@ -53,9 +53,10 @@ import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.WifiDirect;
 public class LocMessService extends Service implements LocationListener{
 
     private BroadcastReceiver receiver;
-    private HashMap<String,ScanResult> ssids;
-    private Location location;
+    public static HashMap<String,ScanResult> ssids;
+    public static Location location;
     private boolean givingLocation = false;
+    public static SharedPreferences prefs;
 
     private LocationManager manager;
     private String bestProvider;
@@ -95,6 +96,7 @@ public class LocMessService extends Service implements LocationListener{
     @Override
     public void onCreate() {
         context = getApplicationContext();
+        prefs = getSharedPreferences(Session.APP_NAME,context.MODE_PRIVATE);
         Log.d("Service","onCreate");
     }
     @Override
@@ -128,7 +130,8 @@ public class LocMessService extends Service implements LocationListener{
         if(checkPermissions()){
             try {
                 location = manager.getLastKnownLocation(bestProvider);
-                Log.d("Service","getLocation="+location.getLatitude()+","+location.getLongitude());
+                if(location!=null)
+                    Log.d("Service","getLocation="+location.getLatitude()+","+location.getLongitude());
                 if(!givingLocation) giveLocation();
             }
             catch (SecurityException e){ }
@@ -209,7 +212,7 @@ public class LocMessService extends Service implements LocationListener{
 
             SharedPreferences prefs = getSharedPreferences(Session.APP_NAME, MODE_PRIVATE);
 
-            Set<String> set = prefs.getStringSet("messages", null);
+            Set<String> set = prefs.getStringSet("received", null);
             if(set==null) set = new HashSet<String>();
             for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
                 String obj = it.next();
@@ -218,7 +221,7 @@ public class LocMessService extends Service implements LocationListener{
             set.add(msg.toString());
 
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putStringSet("messages", set);
+            editor.putStringSet("received", set);
             editor.commit();
 
             MessagesFragment mf = MessagesFragment.newInstance();

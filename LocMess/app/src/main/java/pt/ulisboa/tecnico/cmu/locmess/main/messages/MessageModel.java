@@ -8,8 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
@@ -26,11 +30,50 @@ public class MessageModel {
     private String content;
     private String id;
     private String msgType;
+    private String delivery_mode;
 
 
 
     private boolean selected;
     public View view;
+
+    public MessageModel(JSONObject json) throws Exception {
+        this.id = json.getString("id");
+        this.location = json.getString("location");
+        this.user = json.getString("user");
+        this.policy = json.getString("policy");
+        JSONObject filter = json.getJSONObject("filter");
+        ArrayList<PairModel> pairs = new ArrayList<>();
+        Iterator<?> keys = filter.keys();
+        while( keys.hasNext() ) {
+            String key = (String)keys.next();
+            pairs.add(new PairModel(key,filter.getString(key)));
+        }
+        this.filter = pairs;
+
+        this.start = Calendar.getInstance();
+        this.start.setTime(new Date(json.getLong("start")));
+        this.end = Calendar.getInstance();
+        this.end.setTime(new Date(json.getLong("end")));
+        this.content = json.getString("content");
+        this.msgType = json.getString("msgType");
+        this.delivery_mode = "decentralized";
+        this.selected = false;
+    }
+
+    public MessageModel(String mode, String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end){
+        this.id = id;
+        this.location = location;
+        this.user = user;
+        this.policy = policy;
+        this.filter = filter;
+        this.start = start;
+        this.end = end;
+        this.content = content;
+        this.msgType = "Sent";
+        this.delivery_mode = mode;
+        this.selected = false;
+    }
 
     public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end){
         this.id = id;
@@ -42,6 +85,7 @@ public class MessageModel {
         this.end = end;
         this.content = content;
         this.msgType = "Sent";
+        this.delivery_mode = "centralized";
         this.selected = false;
     }
 
@@ -55,9 +99,12 @@ public class MessageModel {
         this.end = end;
         this.content = content;
         this.msgType = msgType;
+        this.delivery_mode = "centralized";
 
         this.selected = false;
     }
+
+    public String getMode(){ return this.delivery_mode; }
 
     public String getId(){ return this.id; }
 
@@ -132,8 +179,9 @@ public class MessageModel {
                 f.put(filter.get(i).getKey(),filter.get(i).getValue());
 
             obj.put("filter",f);
-            obj.put("start", start);
-            obj.put("end", end);
+            obj.put("start", start.getTime().getTime());
+            obj.put("end", end.getTime().getTime());
+            obj.put("mode",delivery_mode);
             obj.put("content", content);
             obj.put("id", id);
             obj.put("msgType", msgType);
