@@ -237,7 +237,6 @@ public class MapSubFragment extends Fragment implements LocationListener, OnMapR
                                     .position(point)
                                     .title(location.getName()));
                             alertDialogAndroid.dismiss();
-                            Session.getInstance().updateLocations();
                         }
                         else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
                         alertDialogAndroid.dismiss();

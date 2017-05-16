@@ -36,10 +36,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 
@@ -219,7 +223,7 @@ public class MessageCreator extends AppCompatActivity {
         }.execute();
 
         // Policy
-        String[] policies = new String[]{"whitelist","blacklist"};
+        final String[] policies = new String[]{"whitelist","blacklist"};
         final Spinner polSpinner = (Spinner) findViewById(R.id.policy);
         ArrayAdapter<CharSequence> polAdapter = new ArrayAdapter<CharSequence>
                 (getApplicationContext(), R.layout.spinner_wifi_item,policies);
@@ -361,11 +365,7 @@ public class MessageCreator extends AppCompatActivity {
                     }
                     if(mode.equals("Decentralized")){
 
-                        SecureRandom random = new SecureRandom();
-                        String id = new BigInteger(200, random).toString(32);
-                        String user = Session.getInstance().me();
-
-                        ArrayList<PairModel> pairs = new ArrayList<>();
+                        Set<PairModel> pairs = new HashSet<>();
                         for (Map.Entry<String, String> entry : pairsMap.entrySet())
                             pairs.add(new PairModel(entry.getKey(),entry.getValue()));
 
@@ -374,14 +374,22 @@ public class MessageCreator extends AppCompatActivity {
                         Calendar end_cal = Calendar.getInstance();
                         end_cal.setTime(end);
 
-                        MessageModel message = new MessageModel("decentralized",id,location, user,content, policy, pairs, start_cal, end_cal);
-                        Session.getInstance().saveMsg(message);
+
+                        MessageModel.MESSAGE_POLICY pol;
+                        if(policy.equals("whitelist"))
+                            pol = MessageModel.MESSAGE_POLICY.WHITELIST;
+                        else
+                            pol = MessageModel.MESSAGE_POLICY.BLACKLIST;
+
+                        LocationModel loc = LocMessService.getInstance().LOCATIONS().find(location);
+                        MessageModel message = new MessageModel(loc, pol, pairs, start_cal, end_cal, content);
+                        LocMessService.getInstance().MESSAGES().add(message);
                         getIntent().putExtra("creator", true);
                         setResult(RESULT_OK, getIntent());
                         finish();
                     }
                 }catch (Exception e){
-                    Log.d("MessageCreator","ex: "+e.toString());
+                    Log.d("MessageCreator","ex",e);
                     dialogAlert("Error parsing input fields!");
                 }
             }

@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
@@ -80,7 +82,7 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
         }
 
         lastPosition = position;
-        holder.type.setText(location.getType());
+        holder.type.setText(location.getType().toString());
         holder.name.setText(location.getName());
         if(location.getSsid()==null) {
             String lat = location.getLatitude()+"";
@@ -94,5 +96,4 @@ public class LocationAdapter extends ArrayAdapter<LocationModel> {
 
         return result;
     }
-
 }

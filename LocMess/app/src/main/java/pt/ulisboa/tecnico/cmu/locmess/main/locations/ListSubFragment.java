@@ -313,7 +313,6 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                             int size = adapter.getCount();
                             ListView l = (ListView)container.findViewById(R.id.locationslist);
                             if(l!=null) l.smoothScrollToPosition(size);
-                            Session.getInstance().updateLocations();
                         }
                         else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
                         alertDialogAndroid.dismiss();

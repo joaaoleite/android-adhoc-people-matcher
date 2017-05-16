@@ -1,110 +1,128 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
-
-import android.view.View;
-import android.widget.ArrayAdapter;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
-import pt.ulisboa.tecnico.cmu.locmess.R;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
-import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
+import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class MessageModel {
-    private String location;
+    private String id;
+
     private String user;
-    private String subject;
-    private String policy;
-    private ArrayList<PairModel> filter;
+    private String location;
+
+    private MESSAGE_POLICY policy;
+
+    private Set<PairModel> filter;
     private Calendar start;
     private Calendar end;
+
     private String content;
-    private String id;
-    private String msgType;
-    private String delivery_mode;
 
-
+    private MESSAGE_TYPE type;
+    private MESSAGE_MODE mode;
 
     private boolean selected;
-    public View view;
 
-    public MessageModel(JSONObject json) throws Exception {
+    public MessageModel(JSONObject json) throws JSONException {
+
         this.id = json.getString("id");
+
         this.location = json.getString("location");
-        this.user = json.getString("user");
-        this.policy = json.getString("policy");
-        JSONObject filter = json.getJSONObject("filter");
-        ArrayList<PairModel> pairs = new ArrayList<>();
-        Iterator<?> keys = filter.keys();
+
+        this.user = Session.getInstance().get("me");
+        if(json.has("user"))
+            this.user = json.getString("user");
+
+        String msgPolicy = json.getString("policy");
+        if(msgPolicy.equals("whitelist"))
+            this.policy = MESSAGE_POLICY.WHITELIST;
+        if(msgPolicy.equals("blacklist"))
+            this.policy = MESSAGE_POLICY.BLACKLIST;
+
+        JSONObject msgFilter = json.getJSONObject("filter");
+        this.filter = new HashSet<>();
+        Iterator<?> keys = msgFilter.keys();
         while( keys.hasNext() ) {
             String key = (String)keys.next();
-            pairs.add(new PairModel(key,filter.getString(key)));
+            this.filter.add(new PairModel(key,msgFilter.getString(key)));
         }
-        this.filter = pairs;
 
         this.start = Calendar.getInstance();
         this.start.setTime(new Date(json.getLong("start")));
         this.end = Calendar.getInstance();
         this.end.setTime(new Date(json.getLong("end")));
+
         this.content = json.getString("content");
-        this.msgType = json.getString("msgType");
-        this.delivery_mode = "decentralized";
+
+        this.type = MESSAGE_TYPE.SENT;
+        if(json.has("type")) {
+            String msgType = json.getString("type");
+            if (msgType.equals("received"))
+                this.type = MESSAGE_TYPE.RECEIVED;
+        }
+
+        this.mode = MESSAGE_MODE.CENTRALIZED;
+        if(json.has("mode")) {
+            String msgMode = json.getString("mode");
+            if (msgMode.equals("decentralized"))
+                this.mode = MESSAGE_MODE.DECENTRALIZED;
+        }
+
         this.selected = false;
     }
 
-    public MessageModel(String mode, String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end){
+    public MessageModel(MESSAGE_MODE mode, String id, LocationModel location, String user, MESSAGE_POLICY policy, Set<PairModel> filter, Calendar start, Calendar end, String content){
         this.id = id;
-        this.location = location;
+
+        this.location = location.getName();
         this.user = user;
+
         this.policy = policy;
         this.filter = filter;
+
         this.start = start;
         this.end = end;
+
         this.content = content;
-        this.msgType = "Sent";
-        this.delivery_mode = mode;
-        this.selected = false;
+
+        this.type = MESSAGE_TYPE.RECEIVED;
+        this.mode = mode;
     }
 
-    public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end){
-        this.id = id;
-        this.location = location;
-        this.user = user;
+    public MessageModel(LocationModel location, MESSAGE_POLICY policy, Set<PairModel> filter, Calendar start, Calendar end, String content){
+        this.id = generateID();
+
+        this.location = location.getName();
+        this.user = Session.getInstance().get("me");
+
         this.policy = policy;
         this.filter = filter;
+
         this.start = start;
         this.end = end;
+
         this.content = content;
-        this.msgType = "Sent";
-        this.delivery_mode = "centralized";
-        this.selected = false;
+
+        this.type = MESSAGE_TYPE.SENT;
+        this.mode = MESSAGE_MODE.DECENTRALIZED;
     }
 
-    public MessageModel(String id, String location, String user, String content, String policy, ArrayList<PairModel> filter, Calendar start, Calendar end, String msgType){
-        this.id = id;
-        this.location = location;
-        this.user = user;
-        this.policy = policy;
-        this.filter = filter;
-        this.start = start;
-        this.end = end;
-        this.content = content;
-        this.msgType = msgType;
-        this.delivery_mode = "centralized";
+    // ------------------------------------------------------------
 
-        this.selected = false;
-    }
-
-    public String getMode(){ return this.delivery_mode; }
+    public MESSAGE_MODE getMode(){ return this.mode; }
 
     public String getId(){ return this.id; }
 
@@ -116,15 +134,11 @@ public class MessageModel {
         return this.user;
     }
 
-    public String getSubject(){
-        return this.content;
-    }
-
-    public String getPolicy(){
+    public MESSAGE_POLICY getPolicy(){
         return this.policy;
     }
 
-    public ArrayList<PairModel> getFilter(){
+    public Set<PairModel> getFilter(){
         return this.filter;
     }
 
@@ -140,9 +154,14 @@ public class MessageModel {
         return this.content;
     }
 
-    public String getMsgType(){
-        return this.msgType;
+    public MESSAGE_TYPE getType(){ return this.type; }
+
+    public boolean isNow(){
+        Date now = new Date();
+        return start.before(now) && end.after(now);
     }
+
+    // ------------------------------------------------------------
 
     public void setLocation(String value){ this.location = value; }
 
@@ -150,13 +169,9 @@ public class MessageModel {
         this.user = value;
     }
 
-    public void setSubject(String value){
-        this.subject = value;
-    }
+    public void setPolicy(MESSAGE_POLICY value){ this.policy = value; }
 
-    public void setPolicy(String value){ this.policy = value; }
-
-    public void setFilter(ArrayList value){ this.filter = value; }
+    public void setFilter(Set<PairModel> value){ this.filter = value; }
 
     public void setStart(Calendar value){ this.start = value; }
 
@@ -164,32 +179,34 @@ public class MessageModel {
 
     public void setContent(String value){ this.content = value; }
 
+    // ------------------------------------------------------------
 
-    public JSONObject toJSON(){
+    public JSONObject toJSON() throws JSONException{
         JSONObject obj = new JSONObject();
-        try {
-            JSONObject l = new JSONObject();
-            obj.put("location", location);
-            obj.put("user", user);
-            obj.put("subject", subject);
-            obj.put("policy", policy);
 
-            JSONObject f = new JSONObject();
-            for(int i=0; i<filter.size(); i++)
-                f.put(filter.get(i).getKey(),filter.get(i).getValue());
+        obj.put("id", id);
 
-            obj.put("filter",f);
-            obj.put("start", start.getTime().getTime());
-            obj.put("end", end.getTime().getTime());
-            obj.put("mode",delivery_mode);
-            obj.put("content", content);
-            obj.put("id", id);
-            obj.put("msgType", msgType);
-        }catch (JSONException e){ }
+        obj.put("location", location);
+        obj.put("user", user);
+
+        obj.put("policy", policy.toString().toLowerCase());
+        JSONObject f = new JSONObject();
+        for(PairModel pair : filter)
+            f.put(pair.getKey(),pair.getValue());
+        obj.put("filter",f);
+
+        obj.put("start", start.getTime().getTime());
+        obj.put("end", end.getTime().getTime());
+
+        obj.put("content", content);
+
+        obj.put("mode",mode.toString().toLowerCase());
+        obj.put("type", type.toString().toLowerCase());
 
         return obj;
     }
 
+    // ------------------------------------------------------------
 
     public boolean toogle(){
         this.selected = !this.selected;
@@ -198,5 +215,21 @@ public class MessageModel {
 
     public boolean isSelected(){
         return this.selected;
+    }
+
+    // ------------------------------------------------------------
+
+    public enum MESSAGE_TYPE {
+        SENT,RECEIVED
+    };
+    public enum MESSAGE_MODE {
+        CENTRALIZED,DECENTRALIZED
+    };
+    public enum MESSAGE_POLICY {
+        WHITELIST, BLACKLIST
+    }
+
+    private String generateID(){
+        return new BigInteger(100, new SecureRandom()).toString(32);
     }
 }

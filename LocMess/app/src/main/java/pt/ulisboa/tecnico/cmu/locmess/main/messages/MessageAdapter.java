@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
 public class MessageAdapter  extends ArrayAdapter<MessageModel> {
@@ -37,43 +39,39 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
         super(context, R.layout.layout_messages);
 
         this.list = list;
-        if(Session.getInstance().getMsgsReceived()!=null)
-            this.list.addAll(Session.getInstance().getMsgsReceived());
 
-        if(Session.getInstance().getMsgsSent()!=null)
-            this.list.addAll(Session.getInstance().getMsgsSent());
+        try {
+            Set<MessageModel> received = LocMessService.getInstance().MESSAGES().received();
+            if (received != null)
+                this.list.addAll(received);
+
+            Log.d("MessageAdapter","received = "+received);
+
+            Set<MessageModel> sent = LocMessService.getInstance().MESSAGES().sent();
+            if (sent != null)
+                this.list.addAll(sent);
+
+            Log.d("MessageAdapter","sent = "+sent);
+        }
+        catch (NullPointerException e){
+            Log.d("MessageAdapter","constructor",e);
+        }
 
         notifyDataSetChanged();
-        this.msgType = "All";
-    }
-
-    public void insertItem(JSONObject msg) {
-        try {
-            MessageModel message = parse(msg,"Received");
-            list.add(message);
-            notifyDataSetChanged();
-        }catch(Exception e){}
+        this.msgType = "all";
     }
 
     public void insertItem(MessageModel p){
-
         list.add(p);
         notifyDataSetChanged();
     }
-
-    @Override
-    public void notifyDataSetChanged(){
-        super.notifyDataSetChanged();
-        Log.d("MessageAdapter","notifyDataSetChanged to shared prefs");
-    }
-
 
     @Override
     public MessageModel getItem(int position){
         int i = 0;
         try {
             for (MessageModel m : list) {
-                if (m.getMsgType().equals(msgType) || msgType.equals("All")) {
+                if (m.getType().toString().toLowerCase().equals(msgType) || msgType.equals("all")) {
                     if (position == i) {
                         return m;
                     }
@@ -92,64 +90,14 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
     @Override
     public int getCount() {
 
-        if(msgType.equals("All")) return list.size();
+        if(msgType.equals("all")) return list.size();
 
         int count = 0;
         for(MessageModel m : list){
-            if(m.getMsgType().equals(msgType))
+            if(m.getType().toString().toLowerCase().equals(msgType))
                 count++;
         }
         return count;
-    }
-    public static MessageModel parse(String msg, String type) {
-        try{
-            return parse(new JSONObject(msg),type);
-        }
-        catch (JSONException e){}
-        return null;
-    }
-    public static MessageModel parse(JSONObject msg, String type){
-        try {
-            String location = msg.getString("location");
-            String sender = msg.getString("user");
-            String content = msg.getString("content");
-            String policy = msg.getString("policy");
-            String id = msg.getString("id");
-
-
-            Calendar start = Calendar.getInstance();
-            Calendar end = Calendar.getInstance();
-
-            try {
-                String[] s = msg.getString("start").split(" ");
-                start.setTime(new SimpleDateFormat("yyyy-MMM-dd H:m:s").parse(s[5] + "-" + s[1] + "-" + s[2] + " " + s[3]));
-                String[] e = msg.getString("end").split(" ");
-                end.setTime(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss").parse(e[5] + "-" + e[1] + "-" + e[2] + " " + e[3]));
-            }
-            catch (Exception e){
-                try{
-                    start.setTime(new Date(msg.getLong("start")));
-                    end.setTime(new Date(msg.getLong("end")));
-                }
-                catch (Exception e2){
-                    start.setTime(new Date());
-                    end.setTime(new Date());
-                }
-            }
-            ArrayList<PairModel> pairs = new ArrayList<>();
-            JSONObject tags = msg.getJSONObject("keys");
-            if (tags != null) {
-                if (tags.names() != null) {
-                    for (int j = 0; j < tags.names().length(); j++)
-                        pairs.add(new PairModel(tags.names().getString(j), tags.getString(tags.names().getString(j))));
-
-                    return new MessageModel(id, location, sender, content, policy, pairs, start, end, type);
-                }
-            }
-        }
-        catch (JSONException e) { }
-
-        return null;
     }
 
     @Override
@@ -180,7 +128,7 @@ public class MessageAdapter  extends ArrayAdapter<MessageModel> {
 
         lastPosition = position;
         holder.location.setText(message.getLocation());
-        holder.subject.setText(message.getSubject());
+        holder.subject.setText(message.getContent());
 
         return result;
     }

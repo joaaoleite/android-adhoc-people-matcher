@@ -72,9 +72,9 @@ public class Message extends Model {
 		for(HashMap.Entry<String, String> key : this.keys.entrySet()){
 			keys.put(key.getKey(), key.getValue());
 		}
-		obj.put("keys", keys);
-		obj.put("start", this.start);
-		obj.put("end", this.end);
+		obj.put("filter", keys);
+		obj.put("start", this.start.getTime());
+		obj.put("end", this.end.getTime());
 		obj.put("content", this.content);
 		return obj;
     }

@@ -10,7 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
@@ -55,13 +60,15 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
         super.notifyDataSetChanged();
         Log.d("PairAdapter","notifyDataSetChanged to shared prefs");
         try{
-            Session.getInstance().saveKeys(list);
+            JSONObject json = new JSONObject();
+            for(int i=0; i<list.size(); i++)
+                json.put(list.get(i).getKey(),list.get(i).getValue());
+            Session.getInstance().save("profile",json.toString());
         }
         catch (Exception e){
             Log.d("PairAdapter","notifyDataSetChanged error!");
         }
     }
-
 
     @Override
     public PairModel getItem(int position){
@@ -98,5 +105,12 @@ public class PairAdapter extends ArrayAdapter<PairModel>{
         });
 
         return view;
+    }
+
+    public static JSONObject toJSON(Set<PairModel> profile) throws JSONException{
+        JSONObject json = new JSONObject();
+        for(PairModel pair : profile)
+            json.put(pair.getKey(),pair.getValue());
+        return json;
     }
 }

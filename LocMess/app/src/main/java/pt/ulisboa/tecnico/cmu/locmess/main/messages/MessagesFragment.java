@@ -24,6 +24,7 @@ import java.util.Set;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MyFragment;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.requests.Request;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
@@ -66,7 +67,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             adapter();
 
             final Spinner spinnerMsgType = (Spinner) view.findViewById(R.id.spinnerMessages);
-            final String[] msgTypes = new String[]{"All", "Received", "Sent"};
+            final String[] msgTypes = new String[]{"all", "received", "sent"};
             ArrayAdapter<CharSequence> msgTypes_adapter = new ArrayAdapter<CharSequence>
                     (view.getContext(), android.R.layout.simple_spinner_dropdown_item, msgTypes);
             spinnerMsgType.setAdapter(msgTypes_adapter);
@@ -100,18 +101,6 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         list.setAdapter(adapter);
         list.setOnItemClickListener(this);
 
-        final ArrayList<MessageModel> messagesList = new ArrayList<>();
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(Session.APP_NAME,Context.MODE_PRIVATE);
-        Set<String> received = prefs.getStringSet("received",null);
-        if(received!=null){
-            for (Iterator<String> it = received.iterator(); it.hasNext(); ) {
-                String msg = it.next();
-                MessageModel m = MessageAdapter.parse(msg,"Received");
-                if(m!=null) messagesList.add(m);
-            }
-        }
-
         new Request("GET","/messages"){
             @Override
             public void onResponse(JSONObject json) throws JSONException {
@@ -119,9 +108,10 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
                     try {
                         JSONArray messages = json.getJSONArray("messages");
 
+                        ArrayList<MessageModel> messagesList = new ArrayList<>();
                         for (int i = 0; i < messages.length(); i++) {
                             JSONObject msg = messages.getJSONObject(i);
-                            MessageModel m = MessageAdapter.parse(msg,"Sent");
+                            MessageModel m = new MessageModel(msg);
                             if(m!=null) messagesList.add(m);
                         }
                         adapter = new MessageAdapter(view.getContext(), messagesList);
@@ -156,9 +146,12 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             Boolean creator = data.getExtras().getBoolean("creator");
             if (delete && requestCode == 1) {
                 Log.d("Messages", "delete");
-                int position = data.getExtras().getInt("position");
-                MessageModel message = adapter.getItem(position);
-                adapter.list.remove(position);
+                String id = data.getExtras().getString("id");
+                MessageModel message = LocMessService.getInstance().MESSAGES().find(id);
+                for(int i=0; i<adapter.list.size(); i++)
+                    if(adapter.list.get(i).getId().equals(id))
+                        adapter.list.remove(i);
+
                 adapter.notifyDataSetChanged();
                 deleteMessageOnServer(message);
             }
@@ -173,47 +166,20 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MessageModel message = adapter.getItem(position);
 
-        String user = message.getUser();
-        String mode = message.getMode();
-        String subject = message.getSubject();
-        String content = message.getContent();
-        String msgType = message.getMsgType();
-        String location = message.getLocation();
-        String policy = message.getPolicy();
-        String filter = "";
-        for (int i = 0; i < message.getFilter().size(); i++){
-            filter = filter + message.getFilter().get(i).getKey()+ " - " + message.getFilter().get(i).getValue() + "\n";
-        }
-
-        String start = message.getStart().getTime()+"";
-        String end = message.getEnd().getTime()+"";
-
-        start = start.split(" ")[1]+" "+start.split(" ")[2]+" "+start.split(" ")[5]+" at "+start.split(" ")[3].split(":")[0]+":"+start.split(" ")[3].split(":")[1];
-        end = end.split(" ")[1]+" "+end.split(" ")[2]+" "+end.split(" ")[5]+" at "+end.split(" ")[3].split(":")[0]+":"+end.split(" ")[3].split(":")[1];
-
         Intent intent = new Intent(view.getContext(), MessageViewer.class);
-        intent.putExtra("user", user);
-        intent.putExtra("mode",mode);
-        intent.putExtra("subject", subject);
-        intent.putExtra("content", content);
-        intent.putExtra("type", msgType);
-        intent.putExtra("location", location);
-        intent.putExtra("policy", policy);
-        intent.putExtra("filter", filter);
-        intent.putExtra("start", start);
-        intent.putExtra("end", end);
-        intent.putExtra("position", position);
+        intent.putExtra("id", message.getId());
+        intent.putExtra("position",position);
 
-        startActivityForResult(intent,1);
+        startActivityForResult(intent, 1);
     }
 
     @Override
     public void deleteClicked() { }
 
     public void deleteMessageOnServer(MessageModel message){
-        if(message.getMode().equals("decentralized")){
-            Session.getInstance().deleteMsg(message.getId());
-        }else {
+        if(message.getMode() == MessageModel.MESSAGE_MODE.DECENTRALIZED){
+            LocMessService.getInstance().MESSAGES().remove(message.getId());
+        } else {
             new Request("DELETE", "/messages/" + message.getId()) {
                 @Override
                 public void onResponse(JSONObject json) throws JSONException {

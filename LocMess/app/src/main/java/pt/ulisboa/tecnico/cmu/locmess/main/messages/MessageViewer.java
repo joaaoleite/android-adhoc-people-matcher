@@ -14,11 +14,14 @@ import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.MainActivity;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
+import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 
 public class MessageViewer extends AppCompatActivity {
 
     private Menu menu;
     private int position;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +40,25 @@ public class MessageViewer extends AppCompatActivity {
         TextView end = (TextView) findViewById(R.id.messageEnd);
 
         Intent myIntent = getIntent();
-        user.setText(myIntent.getStringExtra("user"));
-        subject.setText(myIntent.getStringExtra("subject"));
-        mode.setText(myIntent.getStringExtra("mode"));
-        content.setText(myIntent.getStringExtra("content"));
-            location.setText(myIntent.getStringExtra("location"));
-            policy.setText(myIntent.getStringExtra("policy"));
-            filter.setText(myIntent.getStringExtra("filter"));
-            start.setText(myIntent.getStringExtra("start"));
-            end.setText(myIntent.getStringExtra("end"));
+        id = myIntent.getStringExtra("id");
+
+        MessageModel msg = LocMessService.getInstance().MESSAGES().find(id);
+
+        user.setText(msg.getUser());
+        subject.setText(msg.getContent());
+        content.setText(msg.getContent());
+        mode.setText(msg.getContent());
+        location.setText(msg.getLocation());
+        policy.setText(msg.getPolicy().toString());
+        filter.setText(toString());
+        String f = "";
+        for(PairModel pair : msg.getFilter())
+            f += pair.getKey() + "=" + pair.getValue();
+
+        filter.setText(f);
+        start.setText(msg.getStart().getTime().toString());
+        end.setText(msg.getEnd().getTime().toString());
+
         this.position = myIntent.getIntExtra("position",-1);
     }
 
@@ -65,6 +78,7 @@ public class MessageViewer extends AppCompatActivity {
             case R.id.delete:
                 getIntent().putExtra("delete", true);
                 getIntent().putExtra("position", position);
+                getIntent().putExtra("id",id);
                 setResult(RESULT_OK, getIntent());
                 finish();
                 break;

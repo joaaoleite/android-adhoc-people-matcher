@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.util.Set;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
 import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 
@@ -49,16 +50,9 @@ public class SendTask extends AsyncTask<Void, String, Void> {
             BufferedReader sockIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String response = sockIn.readLine();
             Log.d("SendTask","Response "+response);
+            receive(response);
             socket.close();
-            try{
-                JSONObject obj = new JSONObject("{\"msgs\":"+response+"}");
-                JSONArray json = obj.getJSONArray("msgs");
-                for(int i=0; i<json.length(); i++)
-                    LocMessService.message(json.getJSONObject(i));
-            }
-            catch (JSONException e){
-                Log.d("SendTask","received",e);
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,5 +62,16 @@ public class SendTask extends AsyncTask<Void, String, Void> {
     @Override
     protected void onPostExecute(Void result) {
         Log.d("WifiDirect","Sending complete!");
+    }
+
+    public void receive(String msgs){
+        try{
+            JSONArray json = new JSONArray(msgs);
+            for(int i=0; i<json.length(); i++)
+                LocMessService.getInstance().MESSAGES().add(new MessageModel(json.getJSONObject(i)));
+        }
+        catch (JSONException e){
+            Log.d("SendTask","received",e);
+        }
     }
 }

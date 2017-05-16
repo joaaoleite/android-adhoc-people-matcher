@@ -42,7 +42,7 @@ public class WifiDirect implements GroupInfoListener {
             Log.d("WifiDirect","onServiceConnected...");
             mService = new Messenger(service);
             mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(LocMessService.getContext(), Looper.getMainLooper(), null);
+            mChannel = mManager.initialize(LocMessService.getInstance().getApplicationContext(), Looper.getMainLooper(), null);
 
             new ReceivingTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -58,7 +58,7 @@ public class WifiDirect implements GroupInfoListener {
 
     public WifiDirect(LocMessService service){
 
-        SimWifiP2pSocketManager.Init(LocMessService.getContext());
+        SimWifiP2pSocketManager.Init(LocMessService.getInstance().getApplicationContext());
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -68,7 +68,7 @@ public class WifiDirect implements GroupInfoListener {
         SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver();
         service.registerReceiver(receiver, filter);
 
-        Intent intent = new Intent(LocMessService.getContext(), SimWifiP2pService.class);
+        Intent intent = new Intent(LocMessService.getInstance().getApplicationContext(), SimWifiP2pService.class);
         service.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 

@@ -17,13 +17,19 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
+import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationModel;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageAdapter;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
+import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
 import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
+import pt.ulisboa.tecnico.cmu.locmess.session.data.Profile;
 
 public class ReceivingTask extends AsyncTask<Void, String, Void> {
 
@@ -51,7 +57,7 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
                     Log.d("ReceivingTask","sockIn");
                     String received = sockIn.readLine();
                     Log.d("ReceivingTask","Message received: "+received);
-                    sock.getOutputStream().write((getMsgs(received).toString()+"\n").getBytes());
+                    sock.getOutputStream().write((send(received)+"\n").getBytes());
                     Log.d("ReceivingTask","Message sent: OK");
                 } catch (IOException e) {
                     Log.d("WifiDirect", "Error socket: "+e.getMessage());
@@ -67,119 +73,38 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
         return null;
     }
 
-    public boolean matchLocation(double lat, double lng, int radius){
-        Location loc = LocMessService.location;
-        Log.d("ReceivingTask","matchLocation location="+loc);
-        if(loc!=null){
-            double latitude = loc.getLatitude();
-            double longitude = loc.getLongitude();
-            Log.d("ReceivingTask","matchLocation now="+latitude+","+longitude+" | msg="+lat+","+lng+":"+radius);
-            boolean match = radius >= Math.acos(Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(lat) +
-                    Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(lat)) *
-                            Math.cos(Math.toRadians(longitude) - Math.toRadians(lng)))) * 6371010;
-            Log.d("ReceivingTask","matchLocation match="+match);
-            return match;
-        }else{
-            return false;
-        }
-    }
 
-    public boolean matchWifi(String ssid){
-        HashMap<String,ScanResult> ssids = LocMessService.ssids;
-        Log.d("ReceivingTask","matchWifi ssids="+ssids);
-        if(ssids!=null){
-            boolean match = ssids.containsKey(ssid);
-            Log.d("ReceivingTask","matchWifi match="+match);
-            return match;
-        }else{
-            return false;
-        }
-    }
-
-    public JSONArray msgsNow(){
+    private String send(String received){
+        Set<PairModel> pairs = new HashSet<>();
         try {
-            String messages = LocMessService.prefs.getString("messages", new JSONArray().toString());
-            JSONObject obj = new JSONObject("{\"messages\":" + messages + "}");
-            JSONArray json = obj.getJSONArray("messages");
-            JSONArray res = new JSONArray();
-            for(int i=0; i<json.length(); i++){
-                JSONObject msg = json.getJSONObject(i);
-                long now = new Date().getTime();
-                if(msg.getLong("start")<now && msg.getLong("end")>now) {
-                    String locations = LocMessService.prefs.getString("locations", "[]");
-                    JSONObject json2 = new JSONObject("{\"locations\":" + locations + "}");
-                    JSONArray locs = json2.getJSONArray("locations");
-                    for (int l = 0; l < locs.length(); l++) {
-
-                        if (locs.getJSONObject(l).getString("name").equals(msg.getString("location"))) {
-                            JSONObject loc = locs.getJSONObject(l);
-                            if (loc.has("ssid")) {
-                                if (matchWifi(loc.getString("ssid"))) {
-                                    res.put(msg);
-                                }
-                            } else if (matchLocation(loc.getDouble("latitude"), loc.getDouble("longitude"), loc.getInt("radius"))) {
-                                res.put(msg);
-                            }
-                        }
-                    }
-                }
+            JSONObject json = new JSONObject(received);
+            Iterator<?> keys = json.keys();
+            while(keys.hasNext() ) {
+                String key = (String)keys.next();
+                String value = (String) json.getString(key);
+                pairs.add(new PairModel(key,value));
             }
-            return res;
-        }catch (Exception e){
-            Log.d("ReceivingTask","msgsNow",e);
-            return new JSONArray();
         }
-    }
+        catch (Exception e){}
 
-    public JSONArray getMsgs(String keys){
-        try{
-            JSONObject profile = new JSONObject(keys);
 
-            JSONArray msgs = msgsNow();
+        Set<MessageModel> messages = LocMessService.getInstance().MESSAGES().sent();
+        Set<MessageModel> matches = new Profile(pairs).match(messages);
 
-            JSONArray res = new JSONArray();
+        JSONArray json = new JSONArray();
+        for(MessageModel msg : matches) {
+            try {
+                LocationModel loc = LocMessService.getInstance().LOCATIONS().find(msg.getLocation());
+                if(loc.getType() == LocationModel.LOCATION_TYPE.GPS)
+                    if(!LocMessService.getInstance().LOCATIONS().match(loc)) continue;
+                if(loc.getType() == LocationModel.LOCATION_TYPE.SSID)
+                    if(!LocMessService.getInstance().WIFIS().match(loc)) continue;
 
-            for(int i=0; i<msgs.length(); i++){
-                JSONObject msg = msgs.getJSONObject(i);
-                JSONObject filter = msg.getJSONObject("filter");
-
-                boolean match = false;
-
-                if(msg.getString("policy").equals("whitelist")) {
-                    match = true;
-                    Iterator<?> filter_keys = filter.keys();
-                    while (filter_keys.hasNext()) {
-                        String key = (String) filter_keys.next();
-                        if (profile.has(key)) {
-                            match = profile.getString(key).equals(filter.get(key));
-                            if(!match) break;
-                        } else{
-                            match = false;
-                            break;
-                        }
-                    }
-                }
-                if(msg.getString("policy").equals("blacklist")) {
-                    match = true;
-                    Iterator<?> filter_keys = filter.keys();
-                    while (filter_keys.hasNext()) {
-                        String key = (String) filter_keys.next();
-                        if (profile.has(key)) {
-                            match = !profile.getString(key).equals(filter.get(key));
-                            if(!match) break;
-                        }
-                    }
-                }
-
-                if(match) {
-                    res.put(msg);
-                }
+                json.put(msg.toJSON());
             }
-            return res;
+            catch (Exception e){}
         }
-        catch (JSONException e){
-            Log.d("ReceivingTask","getMsgs",e);
-            return new JSONArray();
-        }
+
+        return json.toString();
     }
 }
