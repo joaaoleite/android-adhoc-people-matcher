@@ -11,10 +11,14 @@
     <string name="title_profile">Profile</string>
     <string name="title_locations">Locations</string>
     <string name="title_messages">Messages</string>
+    <string name="title_message">Message</string>
+    <string name="new_message">New Message</string>
+    <string name="error_empty_field">Text fields can\'t be empty</string>
+    <string name="error_invalid_field">Some fields are invalid!</string>
+    <string name="error_saving_location">Error saving location</string>
+    <string name="wifi_disabled">Wifi is disabled... Making it enabled</string>
+    <string name="loading_ssids">Loading SSIDs...</string>
     <string name="prompt_text">Locations</string>
     <string name="delivery_mode">Delivery Mode</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment2</string>
     <string name="title_activity_message_viewer">MessageViewer</string>
 </resources>

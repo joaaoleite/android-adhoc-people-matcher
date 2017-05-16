@@ -85,7 +85,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
             FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
             myFab.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    loadingDialog("Loading SSIDs...");
+                    loadingDialog(getActivity().getApplicationContext().getString(R.string.loading_ssids));
                     getSSIDs();
                 }
             });
@@ -109,8 +109,8 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
             Log.d("Wifi","permission granted");
 
             final WifiManager wifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            if (wifi.isWifiEnabled() == false) {
-                Toast.makeText(getActivity().getApplicationContext(), "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
+            if (!wifi.isWifiEnabled()) {
+                Toast.makeText(getActivity().getApplicationContext(), getActivity().getApplicationContext().getString(R.string.wifi_disabled), Toast.LENGTH_LONG).show();
                 wifi.setWifiEnabled(true);
             }
 
@@ -194,9 +194,6 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
     private boolean restoreState(Bundle state){
         if(state==null) return false;
         Log.d("list_sub","restoreState: "+state);
-        //getActivity().getSupportFragmentManager().getFragment(state, "list_sub");
-        //ListView list = (ListView) view.findViewById(R.id.locationslist);
-        //list.onRestoreInstanceState(state.getParcelable("listview"));
         return true;
     }
 
@@ -296,7 +293,7 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
 
                 if (!isTextValid(name)){
                     TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                    info.setText("Text fields can't be empty");
+                    info.setText(getContext().getString(R.string.error_empty_field));
                     return;
                 }
                 final LocationModel location = new LocationModel(name, ssid, mac);
@@ -315,13 +312,13 @@ public class ListSubFragment extends Fragment implements AdapterView.OnItemLongC
                             if(l!=null) l.smoothScrollToPosition(size);
                             Session.getInstance().updateLocations();
                         }
-                        else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        else ((MainActivity)getActivity()).dialogAlert(getContext().getString(R.string.error_saving_location));
                         alertDialogAndroid.dismiss();
                     }
 
                     @Override
                     public void onError(String error) {
-                        ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        ((MainActivity)getActivity()).dialogAlert(getContext().getString(R.string.error_saving_location));
                         alertDialogAndroid.dismiss();
                     }
                 }.execute();

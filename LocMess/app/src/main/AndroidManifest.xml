@@ -44,14 +44,14 @@
 
         <activity
             android:name=".main.messages.MessageViewer"
-            android:label="Message">
+            android:label="@string/title_message">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.MainActivity" />
         </activity>
         <activity
             android:name=".main.messages.MessageCreator"
-            android:label="New Message">
+            android:label="@string/new_message">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main.MainActivity" />
@@ -62,7 +62,7 @@
         <service
             android:name=".session.LocMessService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
     </application>
 
