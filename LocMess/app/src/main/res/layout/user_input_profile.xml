@@ -10,7 +10,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add KeyPair"
+        android:text="@string/keypair"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -23,7 +23,7 @@
         android:id="@+id/keyInputDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter key"
+        android:hint="@string/key"
         android:inputType="text"
         android:completionThreshold="1"
         android:ems="10"/>
@@ -32,7 +32,7 @@
         android:id="@+id/valueInputDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter value"
+        android:hint="@string/value"
         android:inputType="text"
         android:completionThreshold="1"
         android:ems="10"/>

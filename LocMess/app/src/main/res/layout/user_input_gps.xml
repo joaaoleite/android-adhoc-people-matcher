@@ -10,7 +10,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add GPS location"
+        android:text="@string/add_GPS"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -23,27 +23,27 @@
         android:id="@+id/lat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Latitude"
+        android:hint="@string/latitude"
         android:inputType="text" />
     <EditText
         android:id="@+id/lon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Longitude"
+        android:hint="@string/longitude"
         android:inputType="text" />
 
     <EditText
         android:id="@+id/radius"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Radius (meters)"
+        android:hint="@string/radius"
         android:inputType="text" />
 
     <EditText
         android:id="@+id/inputName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Location name"
+        android:hint="@string/location_name"
         android:inputType="text" />
 
 </LinearLayout>

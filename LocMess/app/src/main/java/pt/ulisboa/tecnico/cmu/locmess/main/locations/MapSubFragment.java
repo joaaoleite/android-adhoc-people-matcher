@@ -205,13 +205,13 @@ public class MapSubFragment extends Fragment implements LocationListener, OnMapR
 
                     if (!isTextValid(name)) {
                         TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                        info.setText("Text fields can't be empty");
+                        info.setText(getContext().getString(R.string.error_empty_field));
                         return;
                     }
                 }
                 catch (Exception e){
                     TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                    info.setText("Some fields are invalid!");
+                    info.setText(getContext().getString(R.string.error_invalid_field));
                     return;
                 }
 
@@ -238,13 +238,13 @@ public class MapSubFragment extends Fragment implements LocationListener, OnMapR
                                     .title(location.getName()));
                             alertDialogAndroid.dismiss();
                         }
-                        else ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        else ((MainActivity)getActivity()).dialogAlert(getContext().getString(R.string.error_saving_location));
                         alertDialogAndroid.dismiss();
                     }
 
                     @Override
                     public void onError(String error) {
-                        ((MainActivity)getActivity()).dialogAlert("Error saving location!");
+                        ((MainActivity)getActivity()).dialogAlert(getContext().getString(R.string.error_saving_location));
                         alertDialogAndroid.dismiss();
                     }
                 }.execute();
