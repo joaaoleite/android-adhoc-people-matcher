@@ -49,24 +49,24 @@ public class RegisterActivity extends AppCompatActivity {
     public void register(View view){
 
         if (!isUsernameValid(etUsername.getText().toString())){
-            dialogAlert("Invalid Username. Username can only have letters or numbers.");
+            dialogAlert(getApplicationContext().getString(R.string.invalid_username));
             return;
         }
 
         if (etPassword.getText().toString().length()<3){
-            dialogAlert("Passwords needs to be at least 3 characters long.");
+            dialogAlert(getApplicationContext().getString(R.string.password_size));
             return;
         }
 
         if (!isPasswordTheSame(etPassword.getText().toString(), etPasswordConfirmation.getText().toString())){
-            dialogAlert("Passwords don't match.");
+            dialogAlert(getApplicationContext().getString(R.string.passwords_dont_match));
             return;
         }
 
 
 
 
-        loadingDialog("Please wait...");
+        loadingDialog(getApplicationContext().getString(R.string.wait));
         registerOnServer(etUsername.getText().toString(),etPassword.getText().toString());
 
 
@@ -83,17 +83,17 @@ public class RegisterActivity extends AppCompatActivity {
                 if(obj.getString("status").equals("ok")){
                     loadingDialog(false);
                     success = true;
-                    dialogAlert("Register successful!");
+                    dialogAlert(getApplicationContext().getString(R.string.register_successful));
                 }
                 else{
                     loadingDialog(false);
-                    dialogAlert("Error registering!");
+                    dialogAlert(getApplicationContext().getString(R.string.error_registering));
                 }
             }
             @Override
             public void onError(String msg){
                 loadingDialog(false);
-                dialogAlert("Error registering!");
+                dialogAlert(getApplicationContext().getString(R.string.error_registering));
             }
         }.execute();
     }
@@ -103,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
         builder.setTitle("Register");
         builder.setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getApplicationContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                         if(success) finish();

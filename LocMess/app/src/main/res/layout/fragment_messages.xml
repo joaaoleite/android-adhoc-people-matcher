@@ -33,7 +33,7 @@
                 android:clickable="true"
                 app:srcCompat="@drawable/ic_message_black_24dp"
                 android:tint="#fff"
-                android:layout_gravity="bottom|right" />
+                android:layout_gravity="bottom|end" />
 
         </android.support.design.widget.CoordinatorLayout>
     </LinearLayout>

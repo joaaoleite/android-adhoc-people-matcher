@@ -56,16 +56,16 @@ public class LoginActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
 
         if (!isUsernameValid(username)){
-            dialogAlert("Invalid Username");
+            dialogAlert(getApplicationContext().getString(R.string.invalid_username));
             return;
         }
 
         if (!passwordEmpty(password)){
-            dialogAlert("You need to put a password");
+            dialogAlert(getApplicationContext().getString(R.string.password_needed));
            return;
         }
 
-        loadingDialog("Please wait...");
+        loadingDialog(getApplicationContext().getString(R.string.wait));
         loginOnServer(username, password);
     }
 
@@ -94,18 +94,18 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     else{
                         Session.getInstance().logout();
-                        dialogAlert("Error logging in!");
+                        dialogAlert(getApplicationContext().getString(R.string.error_logging_in));
                     }
 
                 }catch(JSONException e){
                     Session.getInstance().logout();
-                    dialogAlert("Error logging in!");
+                    dialogAlert(getApplicationContext().getString(R.string.error_logging_in));
                 }
                 loadingDialog(false);
             }
             public void onError(String error){
                 Session.getInstance().logout();
-                dialogAlert("Error logging in!");
+                dialogAlert(getApplicationContext().getString(R.string.error_logging_in));
                 loadingDialog(false);
             }
         }.execute();
@@ -128,10 +128,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void dialogAlert(String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Login Error");
+        builder.setTitle(getApplicationContext().getString(R.string.login_error));
         builder.setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getApplicationContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }

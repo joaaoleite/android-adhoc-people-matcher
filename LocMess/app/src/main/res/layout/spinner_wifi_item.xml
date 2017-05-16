@@ -4,7 +4,7 @@
     android:id="@+id/label"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:gravity="left|center_vertical"
+    android:gravity="start|center_vertical"
     android:textColor="@android:color/black"
     android:textSize="20sp"
     android:paddingLeft="4dp"

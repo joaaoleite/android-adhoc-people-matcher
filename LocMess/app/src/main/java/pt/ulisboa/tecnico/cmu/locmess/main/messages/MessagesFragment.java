@@ -51,7 +51,6 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -66,7 +65,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
             adapter();
 
             final Spinner spinnerMsgType = (Spinner) view.findViewById(R.id.spinnerMessages);
-            final String[] msgTypes = new String[]{"All", "Received", "Sent"};
+            final String[] msgTypes = new String[]{getContext().getString(R.string.msgType_all), getContext().getString(R.string.msgType_received), getContext().getString(R.string.msgType_sent)};
             ArrayAdapter<CharSequence> msgTypes_adapter = new ArrayAdapter<CharSequence>
                     (view.getContext(), android.R.layout.simple_spinner_dropdown_item, msgTypes);
             spinnerMsgType.setAdapter(msgTypes_adapter);
