@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.profile;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     private View view;
     private ListView list;
     private PairAdapter adapter;
+    private ViewGroup container;
+    private ProgressDialog dialog;
 
     private HashMap<String,String[]> autocomplete = new HashMap<>();
 
@@ -59,111 +62,115 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle state) {
         if(view==null) {
+            this.container = container;
             this.view = inflater.inflate(R.layout.fragment_profile, container, false);
             this.list = (ListView) view.findViewById(R.id.list);
-            final Fragment f = this;
             restoreState(state);
             adapter();
-            getServerKeysAutoComplete();
+
 
             FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab);
             myFab.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    LayoutInflater layoutInflaterAndroid = LayoutInflater.from(f.getContext());
-                    final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_profile, container, false);
-                    AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(f.getContext());
-                    alertDialogBuilderUserInput.setView(mView);
-
-                    final AutoCompleteTextView etKeyInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.keyInputDialog);
-                    final AutoCompleteTextView etValueInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.valueInputDialog);
-
-                    etValueInputDialog.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                        public void onFocusChange(View v, boolean hasFocus) {
-                            if(hasFocus) {
-                                String[] values = getServerValuesAutoComplete(etKeyInputDialog.getText().toString().toLowerCase());
-                                ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
-                                        (view.getContext(), R.layout.autocomplete_item,values);
-                                etValueInputDialog.setAdapter(autocomplete);
-                            }
-                        }
-                    });
-
-                    String[] keys = getServerKeysAutoComplete();
-                    ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
-                            (view.getContext(), R.layout.autocomplete_item,keys);
-                    etKeyInputDialog.setAdapter(autocomplete);
-
-                    alertDialogBuilderUserInput
-                            .setCancelable(false)
-                            .setPositiveButton("Add",new DialogInterface.OnClickListener(){
-                                @Override
-                                public void onClick(DialogInterface d, int w){
-
-                                }
-                            })
-                            .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialogBox, int id) {
-
-                                        dialogBox.cancel();
-                                    }
-                                }
-                            );
-
-                    final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-                    alertDialogAndroid.show();
-
-
-                    alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            String key = etKeyInputDialog.getText().toString().toLowerCase();
-                            String value = etValueInputDialog.getText().toString().toLowerCase();
-
-                            Log.d("profile","key: "+key);
-
-                            if (!isTextValid(key) || !isTextValid(value)){
-                                TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                                info.setText("Text fields can't be empty");
-                                return;
-                            }
-                            final PairModel keypair = new PairModel(key,value);
-
-
-                            HashMap<String,String> params = new HashMap<>();
-                            params.put("key", keypair.getKey());
-                            params.put("value", keypair.getValue());
-                            new Request("PUT","/profile",params){
-                                @Override
-                                public void onResponse(JSONObject json) throws JSONException{
-                                    alertDialogAndroid.dismiss();
-                                    if(json.getString("status").equals("ok")) {
-                                        adapter.insertItem(keypair);
-                                        if(((ListView)container.findViewById(R.id.list))!=null)
-                                            ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
-                                    }
-                                    else{
-                                        ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
-                                    }
-
-                                }
-                                @Override
-                                public void onError(String msg){
-                                    ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
-                                }
-                            }.execute();
-                        }
-                    });
-
+                    getServerKeysAutoComplete();
                 }
             });
         }
         return view;
     }
 
-    public String[] getServerKeysAutoComplete(){
+    public void showAddDialog(){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getContext());
+        final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_profile, container, false);
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getContext());
+        alertDialogBuilderUserInput.setView(mView);
 
+        final AutoCompleteTextView etKeyInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.keyInputDialog);
+        final AutoCompleteTextView etValueInputDialog = (AutoCompleteTextView) mView.findViewById(R.id.valueInputDialog);
+
+        etValueInputDialog.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    String[] values = getServerValuesAutoComplete(etKeyInputDialog.getText().toString().toLowerCase());
+                    ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
+                            (view.getContext(), R.layout.autocomplete_item,values);
+                    etValueInputDialog.setAdapter(autocomplete);
+                }
+            }
+        });
+
+        String[] keys = autocomplete.keySet().toArray(new String[0]);
+        ArrayAdapter<String> autocomplete = new ArrayAdapter<String>
+                (view.getContext(), R.layout.autocomplete_item,keys);
+        etKeyInputDialog.setAdapter(autocomplete);
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton("Add",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface d, int w){
+
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+
+                                dialogBox.cancel();
+                            }
+                        }
+                );
+
+        final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
+
+
+        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String key = etKeyInputDialog.getText().toString().toLowerCase();
+                String value = etValueInputDialog.getText().toString().toLowerCase();
+
+                Log.d("profile","key: "+key);
+
+                if (!isTextValid(key) || !isTextValid(value)){
+                    TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
+                    info.setText(getContext().getString(R.string.error_invalid_field));
+                    return;
+                }
+                final PairModel keypair = new PairModel(key,value);
+
+
+                HashMap<String,String> params = new HashMap<>();
+                params.put("key", keypair.getKey());
+                params.put("value", keypair.getValue());
+                new Request("PUT","/profile",params){
+                    @Override
+                    public void onResponse(JSONObject json) throws JSONException{
+                        alertDialogAndroid.dismiss();
+                        if(json.getString("status").equals("ok")) {
+                            adapter.insertItem(keypair);
+                            if(((ListView)container.findViewById(R.id.list))!=null)
+                                ((ListView)container.findViewById(R.id.list)).smoothScrollToPosition(adapter.getCount());
+                        }
+                        else{
+                            ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
+                        }
+
+                    }
+                    @Override
+                    public void onError(String msg){
+                        ((MainActivity) getActivity()).dialogAlert("Error saving KeyPair!");
+                    }
+                }.execute();
+            }
+        });
+
+    }
+
+    public void getServerKeysAutoComplete(){
+        loadingDialog(getContext().getString(R.string.wait));
         new Request("GET","/keys"){
             @Override
             public void onResponse(JSONObject json) throws JSONException {
@@ -177,15 +184,18 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
                             for (int j = 0; j < values.length(); j++)
                                 array[j] = values.getString(j);
                             autocomplete.put(key, array);
-                            Log.d("AutoComplete","tao?");
                         }
                     }
                 }
+                loadingDialog(false);
+                showAddDialog();
             }
             @Override
-            public void onError(String error) {}
+            public void onError(String error) {
+                loadingDialog(false);
+                showAddDialog();
+            }
         }.execute();
-        return autocomplete.keySet().toArray(new String[0]);
     }
 
     public String[] getServerValuesAutoComplete(String key){
@@ -200,9 +210,6 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
     }
 
 
-    public void postKeyPairToServer(PairModel keypair){
-        // TODO: Server Requests
-    }
     @Override
     public void deleteClicked() {
         Log.d("profile","delete");
@@ -304,6 +311,13 @@ public class ProfileFragment extends MyFragment implements AdapterView.OnItemLon
         }
         ((MainActivity)getActivity()).getMenu().getItem(0).setVisible(selected > 0);
         return true;
+    }
+
+    private void loadingDialog(String message){
+        dialog = ProgressDialog.show(this.getActivity(), "", message, true);
+    }
+    private void loadingDialog(Boolean state){
+        if(!state) dialog.dismiss();
     }
 
 

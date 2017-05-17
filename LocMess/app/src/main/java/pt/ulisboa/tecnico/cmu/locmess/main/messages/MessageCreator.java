@@ -290,7 +290,7 @@ public class MessageCreator extends AppCompatActivity {
 
                         if (!isTextValid(key) || !isTextValid(value)){
                             TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                            info.setText("Text fields can't be empty");
+                            info.setText(getApplicationContext().getString(R.string.error_invalid_field));
                             return;
                         }
                         pairsMap.put(key,value);

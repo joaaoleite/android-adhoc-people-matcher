@@ -68,7 +68,7 @@ public class Messages extends Controller{
             HashSet<String> messageIDs = Database.Locations().getLocationMessagesID(location);
             for(String id : messageIDs){
                 Message msg = this.getMessageByID(id);
-                if(msg.isNow() && msg.fitKeys(userKeys)) res.add(msg);
+                if(msg.isNow() && msg.fitKeys(userKeys) && !msg.getUser().equals(username)) res.add(msg);
             }
         }
         return res;

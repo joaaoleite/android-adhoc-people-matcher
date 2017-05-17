@@ -205,7 +205,7 @@ public class MapSubFragment extends Fragment implements LocationListener, OnMapR
 
                     if (!isTextValid(name)) {
                         TextView info = (TextView) mView.findViewById(R.id.infoInputDialog);
-                        info.setText(getContext().getString(R.string.error_empty_field));
+                        info.setText(getContext().getString(R.string.error_invalid_field));
                         return;
                     }
                 }

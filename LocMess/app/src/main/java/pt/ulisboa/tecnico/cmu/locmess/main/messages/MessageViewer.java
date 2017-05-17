@@ -30,7 +30,7 @@ public class MessageViewer extends AppCompatActivity {
 
         TextView user = (TextView) findViewById(R.id.messageUser);
         TextView mode = (TextView) findViewById(R.id.mode);
-        TextView subject = (TextView) findViewById(R.id.messageSubject);
+        TextView msgtype = (TextView) findViewById(R.id.messageType);
         TextView content = (TextView) findViewById(R.id.messageContent);
         TextView location = (TextView) findViewById(R.id.messageLocation);
 
@@ -45,7 +45,7 @@ public class MessageViewer extends AppCompatActivity {
         MessageModel msg = LocMessService.getInstance().MESSAGES().find(id);
 
         user.setText(msg.getUser());
-        subject.setText(msg.getContent());
+        msgtype.setText(msg.getType().toString().toLowerCase());
         content.setText(msg.getContent());
         mode.setText(msg.getMode().toString().toLowerCase());
         location.setText(msg.getLocation());
