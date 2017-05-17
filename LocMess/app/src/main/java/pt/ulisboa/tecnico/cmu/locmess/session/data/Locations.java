@@ -141,21 +141,13 @@ public class Locations implements LocationListener{
     public boolean match(double lat, double lng, int radius){
         Log.d("Locations","match location="+location);
 
-        return true; //TODO
-        /*
-        if(location!=null){
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
+        Location targetLoc = new Location("");
+        targetLoc.setLatitude(lat);
+        targetLoc.setLongitude(lng);
 
-            boolean match = radius >= Math.acos(Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(lat) +
-                    Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(lat)) *
-                            Math.cos(Math.toRadians(longitude) - Math.toRadians(lng)))) * 6371010;
 
-            return match;
-        }else{
-            return false;
-        }
-        */
+        return targetLoc.distanceTo(location) <= radius;
+
     }
 
     @Override
