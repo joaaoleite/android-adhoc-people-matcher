@@ -1,0 +1,10 @@
+move B ()
+commit
+
+wait 6
+
+move B (A)
+commit
+
+joingroup B (A)
+commit

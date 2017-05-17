@@ -1,0 +1,28 @@
+newdevice A
+newdevice B
+
+list devices
+list emus
+
+assignaddr e1
+assignaddr e2
+
+binddevice A e1
+binddevice B e2
+
+wait 2
+list devices
+ping
+wait 2
+
+# move A nearby B
+move A (B)
+list neighbors
+commit
+
+wait 2
+
+# create group
+creategroup A (B)
+list groups
+commit
