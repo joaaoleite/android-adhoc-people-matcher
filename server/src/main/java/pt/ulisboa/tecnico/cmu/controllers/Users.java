@@ -51,16 +51,13 @@ public class Users extends Controller{
         ConcurrentHashMap<String, HashSet<String>> keys = new ConcurrentHashMap<String, HashSet<String>>();
         for(HashMap.Entry<String, Model> user : this.entrySet()){
             for(HashMap.Entry<String, String> userKey : ((User) user.getValue()).getKeys().entrySet()){
-                if(!keys.containsKey(userKey.getKey())){
-                    HashSet<String> hash = new HashSet<String>();
-                    hash.add(userKey.getValue());
-                    keys.put(userKey.getKey(), hash);
-                }
-                else{
-                    HashSet<String> hash = keys.get(userKey.getValue());
-                    hash.add(userKey.getValue());
-                    keys.put(userKey.getKey(), hash);
-                }
+                HashSet<String> hash;
+                if(keys.containsKey(userKey.getKey()))
+                    hash = keys.get(userKey.getKey());
+                else
+                    hash = new HashSet<String>();
+                hash.add(userKey.getValue());
+                keys.put(userKey.getKey(), hash);
             }
         }
         return keys;
