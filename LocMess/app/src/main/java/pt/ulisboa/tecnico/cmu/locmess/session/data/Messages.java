@@ -38,7 +38,7 @@ public class Messages {
     public void add(MessageModel msg){
         add(msg.getType().toString().toLowerCase(),msg);
     }
-    private void add(String key, MessageModel msg){
+    private void add(String key, final MessageModel msg){
         Log.d("Messages","add key="+key+" msg="+msg.getId());
         try{
             JSONObject json = msg.toJSON();
@@ -46,11 +46,22 @@ public class Messages {
             JSONArray list = new JSONArray();
             if(saved!=null)
                 list = new JSONArray(saved);
+
+            for(int i=0; i<list.length(); i++)
+                if(list.getJSONObject(i).getString("id").equals(json.getString("id")))
+                    return;
             list.put(json);
             Session.getInstance().save(key,list.toString());
 
-            if(MessagesFragment.newInstance()!=null)
-                MessagesFragment.newInstance().adapter.insertItem(msg);
+            if(msg.getType() == MessageModel.MESSAGE_TYPE.RECEIVED) {
+                LocMessService.getInstance().notification(msg);
+                MessagesFragment.newInstance().getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MessagesFragment.newInstance().adapter.insertItem(msg);
+                    }
+                });
+            }
         }
         catch (JSONException e){
             Log.d("Messages","add",e);
@@ -69,12 +80,15 @@ public class Messages {
                 if(!saved.getJSONObject(i).getString("id").equals(id))
                     list.put(saved.getJSONObject(i));
             }
+            Session.getInstance().save(key,list.toString());
         }
-        catch (JSONException e){}
+        catch (JSONException e){
+            Log.d("Messages","remove ex=",e);
+        }
     }
     public void remove(String id){
-        remove("received",id);
-        remove("sent",id);
+        remove(MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase(),id);
+        remove(MessageModel.MESSAGE_TYPE.SENT.toString().toLowerCase(),id);
     }
 
     // -------------

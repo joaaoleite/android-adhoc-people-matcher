@@ -103,6 +103,7 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
         new Request("GET","/messages"){
             @Override
             public void onResponse(JSONObject json) throws JSONException {
+                Log.d("MessagesFragment","adapter onResponse json="+json);
                 if(json.getString("status").equals("ok")){
                     try {
                         JSONArray messages = json.getJSONArray("messages");
@@ -110,16 +111,18 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
                         ArrayList<MessageModel> messagesList = new ArrayList<>();
                         for (int i = 0; i < messages.length(); i++) {
                             JSONObject msg = messages.getJSONObject(i);
+                            msg.put("mode", MessageModel.MESSAGE_MODE.CENTRALIZED.toString().toLowerCase());
+                            msg.put("type", MessageModel.MESSAGE_TYPE.SENT.toString().toLowerCase());
                             MessageModel m = new MessageModel(msg);
                             if(m!=null) messagesList.add(m);
                         }
+
                         adapter = new MessageAdapter(view.getContext(), messagesList);
                         list.setAdapter(adapter);
                     }
                     catch (Exception e){
-                        e.printStackTrace();
                         Log.d("Messages","Error fetching messages!");
-                        Log.d("Messages","Error: ");
+                        Log.d("Messages","Error: ",e);
                     }
                 }
             }
@@ -176,20 +179,25 @@ public class MessagesFragment extends MyFragment implements AdapterView.OnItemCl
     public void deleteClicked() { }
 
     public void deleteMessageOnServer(MessageModel message){
-        if(message.getMode() == MessageModel.MESSAGE_MODE.DECENTRALIZED){
-            LocMessService.getInstance().MESSAGES().remove(message.getId());
-        } else {
+        Log.d("MessagesFragment","deleteMessageOnServer msg="+message.getId());
+        if(message.getMode() == MessageModel.MESSAGE_MODE.CENTRALIZED &&
+                message.getType() == MessageModel.MESSAGE_TYPE.SENT){
+            Log.d("MessagesFragment","deleteMessageOnServer mode=cen");
             new Request("DELETE", "/messages/" + message.getId()) {
                 @Override
                 public void onResponse(JSONObject json) throws JSONException {
-
+                    Log.d("MessagesFragment","onResponse json="+json);
                 }
 
                 @Override
                 public void onError(String error) {
-
+                    Log.d("MessagesFragment","onResponse error="+error);
                 }
             }.execute();
+        }
+        else {
+            Log.d("MessagesFragment","deleteMessageOnServer mode=dec");
+            LocMessService.getInstance().MESSAGES().remove(message.getId());
         }
     }
 

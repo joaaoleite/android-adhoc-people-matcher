@@ -67,8 +67,11 @@ public class SendTask extends AsyncTask<Void, String, Void> {
     public void receive(String msgs){
         try{
             JSONArray json = new JSONArray(msgs);
-            for(int i=0; i<json.length(); i++)
-                LocMessService.getInstance().MESSAGES().add(new MessageModel(json.getJSONObject(i)));
+            for(int i=0; i<json.length(); i++) {
+                JSONObject msg = json.getJSONObject(i);
+                msg.put("type", MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase());
+                LocMessService.getInstance().MESSAGES().add(new MessageModel(msg));
+            }
         }
         catch (JSONException e){
             Log.d("SendTask","received",e);

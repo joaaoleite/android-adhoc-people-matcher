@@ -143,7 +143,7 @@ public class MapSubFragment extends Fragment implements LocationListener, OnMapR
 
         for(int i=0; i<ListSubFragment.adapter.getCount(); i++){
             LocationModel l = ListSubFragment.adapter.getItem(i);
-            if(l.getType().equals("GPS")){
+            if(l.getType()== LocationModel.LOCATION_TYPE.GPS){
                 LatLng point = new LatLng(l.getLatitude(),l.getLongitude());
                 map.addMarker(new MarkerOptions().position(point).title(l.getName()));
             }

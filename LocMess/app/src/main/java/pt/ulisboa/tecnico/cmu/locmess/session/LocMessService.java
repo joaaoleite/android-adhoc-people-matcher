@@ -60,7 +60,6 @@ public class LocMessService extends Service{
     @Override
     public void onCreate() {
         singleton = this;
-
         prefs = getSharedPreferences(Session.APP_NAME,getApplicationContext().MODE_PRIVATE);
         locations = new Locations(this);
         wifis = new Wifis(this);

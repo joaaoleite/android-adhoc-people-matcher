@@ -47,7 +47,7 @@ public class MessageViewer extends AppCompatActivity {
         user.setText(msg.getUser());
         subject.setText(msg.getContent());
         content.setText(msg.getContent());
-        mode.setText(msg.getContent());
+        mode.setText(msg.getMode().toString().toLowerCase());
         location.setText(msg.getLocation());
         policy.setText(msg.getPolicy().toString());
         filter.setText(toString());

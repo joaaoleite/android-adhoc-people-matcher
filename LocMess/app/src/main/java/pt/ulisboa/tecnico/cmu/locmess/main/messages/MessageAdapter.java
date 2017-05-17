@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.locmess.main.messages;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;

@@ -87,24 +87,35 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
         }
         catch (Exception e){}
 
+        Log.d("ReceivingTask","send() pairs="+pairs.toString());
 
         Set<MessageModel> messages = LocMessService.getInstance().MESSAGES().sent();
+        Log.d("ReceivingTask","send() messages="+messages.toString());
         Set<MessageModel> matches = new Profile(pairs).match(messages);
+        Log.d("ReceivingTask","send() matches="+matches.toString());
 
         JSONArray json = new JSONArray();
         for(MessageModel msg : matches) {
+            Log.d("ReceivingTask","send() for - msg = "+msg.getId());
             try {
                 LocationModel loc = LocMessService.getInstance().LOCATIONS().find(msg.getLocation());
-                if(loc.getType() == LocationModel.LOCATION_TYPE.GPS)
-                    if(!LocMessService.getInstance().LOCATIONS().match(loc)) continue;
+                Log.d("ReceivingTask","loc="+loc);
+                if(loc.getType() == LocationModel.LOCATION_TYPE.GPS) {
+                    Log.d("ReceivingTask","send if type = GPS");
+                    if (!LocMessService.getInstance().LOCATIONS().match(loc)) continue;
+                }
                 if(loc.getType() == LocationModel.LOCATION_TYPE.SSID)
                     if(!LocMessService.getInstance().WIFIS().match(loc)) continue;
 
+                Log.d("ReceivingTask","msg for end");
+
                 json.put(msg.toJSON());
             }
-            catch (Exception e){}
+            catch (Exception e){
+                Log.d("ReceivingTask","send ex",e);
+            }
         }
-
+        Log.d("ReceivingTask","send = "+json.toString());
         return json.toString();
     }
 }

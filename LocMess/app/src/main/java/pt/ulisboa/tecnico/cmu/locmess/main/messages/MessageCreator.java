@@ -350,6 +350,7 @@ public class MessageCreator extends AppCompatActivity {
                         new Request("POST", "/messages", params) {
                             @Override
                             public void onResponse(JSONObject json) throws JSONException {
+                                Log.d("MessageCreator","json="+json);
                                 if (json.getString("status").equals("ok")) {
                                     getIntent().putExtra("creator", true);
                                     setResult(RESULT_OK, getIntent());

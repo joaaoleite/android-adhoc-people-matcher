@@ -158,7 +158,7 @@ public class MessageModel {
 
     public boolean isNow(){
         Date now = new Date();
-        return start.before(now) && end.after(now);
+        return start.getTime().before(now) && end.getTime().after(now);
     }
 
     // ------------------------------------------------------------
