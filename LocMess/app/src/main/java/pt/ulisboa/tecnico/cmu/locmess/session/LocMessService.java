@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageViewer;
 import pt.ulisboa.tecnico.cmu.locmess.session.data.Locations;
 import pt.ulisboa.tecnico.cmu.locmess.session.data.Messages;
+import pt.ulisboa.tecnico.cmu.locmess.session.data.Profile;
 import pt.ulisboa.tecnico.cmu.locmess.session.data.Wifis;
 import pt.ulisboa.tecnico.cmu.locmess.session.wifidirect.WifiDirect;
 

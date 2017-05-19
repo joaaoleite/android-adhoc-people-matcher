@@ -30,23 +30,25 @@ public class Wifis {
     }
 
     public void update(){
+        try {
+            if (!wifi.isWifiEnabled())
+                wifi.setWifiEnabled(true);
 
-        if(!wifi.isWifiEnabled())
-            wifi.setWifiEnabled(true);
-
-        receiver = new BroadcastReceiver() {
-               @Override
-               public void onReceive(Context c, Intent intent) {
-                   HashMap<String,ScanResult> tmp = new HashMap<>();
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context c, Intent intent) {
+                    HashMap<String, ScanResult> tmp = new HashMap<>();
                     List<ScanResult> results = wifi.getScanResults();
                     for (int i = 0; i < results.size(); i++)
-                        if(!ssids.containsKey(results.get(i).SSID))
-                            ssids.put(results.get(i).SSID,results.get(i));
+                        if (!ssids.containsKey(results.get(i).SSID))
+                            ssids.put(results.get(i).SSID, results.get(i));
                 }
-        };
+            };
 
-        service.registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        wifi.startScan();
+            service.registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            wifi.startScan();
+        }
+        catch (Exception e){}
     }
 
     public boolean match(LocationModel loc){

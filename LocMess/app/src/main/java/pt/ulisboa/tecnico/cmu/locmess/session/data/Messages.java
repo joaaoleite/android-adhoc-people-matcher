@@ -38,7 +38,7 @@ public class Messages {
     public void add(MessageModel msg){
         add(msg.getType().toString().toLowerCase(),msg);
     }
-    private void add(String key, final MessageModel msg){
+    public void add(String key, final MessageModel msg){
         Log.d("Messages","add key="+key+" msg="+msg.getId());
         try{
             JSONObject json = msg.toJSON();
@@ -55,12 +55,15 @@ public class Messages {
 
             if(msg.getType() == MessageModel.MESSAGE_TYPE.RECEIVED) {
                 LocMessService.getInstance().notification(msg);
-                MessagesFragment.newInstance().getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MessagesFragment.newInstance().adapter.insertItem(msg);
-                    }
-                });
+                try {
+                    MessagesFragment.newInstance().getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessagesFragment.newInstance().adapter.insertItem(msg);
+                        }
+                    });
+                }
+                catch (NullPointerException e){}
             }
         }
         catch (JSONException e){
@@ -71,14 +74,25 @@ public class Messages {
     // -------------
 
     private void remove(String key, String id){
+        Log.d("Messages","remove key="+key);
         try {
             String received = Session.getInstance().get(key);
             if(received==null) return;
             JSONArray saved = new JSONArray(received);
             JSONArray list = new JSONArray();
-            for(int i=0; i<list.length(); i++){
-                if(!saved.getJSONObject(i).getString("id").equals(id))
+            for(int i=0; i<saved.length(); i++){
+                if(!saved.getJSONObject(i).getString("id").equals(id)) {
                     list.put(saved.getJSONObject(i));
+                }
+                else{
+                    Log.d("Messages","remove key="+key+" id="+id);
+                    if(key.equals(MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase())){
+                        Log.d("Messages","removed=true");
+                        JSONObject a=saved.getJSONObject(i);
+                        a.put("removed",true);
+                        list.put(a);
+                    }
+                }
             }
             Session.getInstance().save(key,list.toString());
         }
@@ -87,8 +101,10 @@ public class Messages {
         }
     }
     public void remove(String id){
+        Log.d("Messages","remove id="+id);
         remove(MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase(),id);
         remove(MessageModel.MESSAGE_TYPE.SENT.toString().toLowerCase(),id);
+        remove("relay",id);
     }
 
     // -------------
@@ -124,7 +140,8 @@ public class Messages {
 
             for (int i=0; i < json.length(); i++) {
                 try {
-                    messages.add(new MessageModel(json.getJSONObject(i)));
+                    if(!json.getJSONObject(i).has("removed"))
+                        messages.add(new MessageModel(json.getJSONObject(i)));
                 }
                 catch (JSONException e) {
                     Log.d("Messages","get",e);
@@ -139,5 +156,8 @@ public class Messages {
     }
     public Set<MessageModel> sent(){
         return get(MessageModel.MESSAGE_TYPE.SENT.toString().toLowerCase());
+    }
+    public Set<MessageModel> relay(){
+        return get("relay");
     }
 }

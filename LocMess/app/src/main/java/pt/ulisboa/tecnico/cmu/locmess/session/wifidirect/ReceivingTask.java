@@ -1,10 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.session.wifidirect;
 
-import android.content.SharedPreferences;
-import android.location.Location;
-import android.net.wifi.ScanResult;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,19 +10,12 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationModel;
-import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageAdapter;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
-import pt.ulisboa.tecnico.cmu.locmess.main.profile.PairModel;
 import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
 import pt.ulisboa.tecnico.cmu.locmess.session.data.Profile;
@@ -56,8 +45,10 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
                     BufferedReader sockIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                     Log.d("ReceivingTask","sockIn");
                     String received = sockIn.readLine();
+                    Log.d("ReceivingTask","received="+received);
+                    receive(received);
                     Log.d("ReceivingTask","Message received: "+received);
-                    sock.getOutputStream().write((send(received)+"\n").getBytes());
+                    sock.getOutputStream().write((("OK\n").getBytes()));
                     Log.d("ReceivingTask","Message sent: OK");
                 } catch (IOException e) {
                     Log.d("WifiDirect", "Error socket: "+e.getMessage());
@@ -73,49 +64,60 @@ public class ReceivingTask extends AsyncTask<Void, String, Void> {
         return null;
     }
 
+    public void receive(String msgs){
+        try{
+            JSONArray json = new JSONArray(msgs);
+            for(int i=0; i<json.length(); i++) {
+                JSONObject msg = json.getJSONObject(i);
+                MessageModel message = new MessageModel(msg);
 
-    private String send(String received){
-        Set<PairModel> pairs = new HashSet<>();
-        try {
-            JSONObject json = new JSONObject(received);
-            Iterator<?> keys = json.keys();
-            while(keys.hasNext() ) {
-                String key = (String)keys.next();
-                String value = (String) json.getString(key);
-                pairs.add(new PairModel(key,value));
-            }
-        }
-        catch (Exception e){}
+                Log.d("ReceivingTask","receive() msg.user="+message.getUser());
+                Log.d("ReceivingTask","receive() me="+Session.getInstance().get("me"));
 
-        Log.d("ReceivingTask","send() pairs="+pairs.toString());
+                if(message.getUser().equals(Session.getInstance().get("me")))
+                    continue;
 
-        Set<MessageModel> messages = LocMessService.getInstance().MESSAGES().sent();
-        Log.d("ReceivingTask","send() messages="+messages.toString());
-        Set<MessageModel> matches = new Profile(pairs).match(messages);
-        Log.d("ReceivingTask","send() matches="+matches.toString());
+                Log.d("ReceivingTask","receive() add_relay");
 
-        JSONArray json = new JSONArray();
-        for(MessageModel msg : matches) {
-            Log.d("ReceivingTask","send() for - msg = "+msg.getId());
-            try {
-                LocationModel loc = LocMessService.getInstance().LOCATIONS().find(msg.getLocation());
-                Log.d("ReceivingTask","loc="+loc);
-                if(loc.getType() == LocationModel.LOCATION_TYPE.GPS) {
-                    Log.d("ReceivingTask","send if type = GPS");
-                    if (!LocMessService.getInstance().LOCATIONS().match(loc)) continue;
+                LocMessService.getInstance().MESSAGES().add("relay",message);
+
+
+                Log.d("ReceivingTask", "receive() match");
+                if(match(message)){
+                    msg.put("type", MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase());
+                    LocMessService.getInstance().MESSAGES().add(new MessageModel(msg));
                 }
-                if(loc.getType() == LocationModel.LOCATION_TYPE.SSID)
-                    if(!LocMessService.getInstance().WIFIS().match(loc)) continue;
-
-                Log.d("ReceivingTask","msg for end");
-
-                json.put(msg.toJSON());
-            }
-            catch (Exception e){
-                Log.d("ReceivingTask","send ex",e);
             }
         }
-        Log.d("ReceivingTask","send = "+json.toString());
-        return json.toString();
+        catch (JSONException e){
+            Log.d("SendTask","received",e);
+        }
+    }
+
+    private boolean match(MessageModel msg){
+        try {
+            Log.d("ReceivingTask","match 1");
+            if(!new Profile().match(msg)) return false;
+            Log.d("ReceivingTask","match 2");
+            LocationModel loc = LocMessService.getInstance().LOCATIONS().find(msg.getLocation());
+            Log.d("ReceivingTask","match 3");
+            if(loc.getType() == LocationModel.LOCATION_TYPE.GPS) {
+                Log.d("ReceivingTask","match 4");
+                if (!LocMessService.getInstance().LOCATIONS().match(loc)) return false;
+                Log.d("ReceivingTask","match 5");
+            }
+            Log.d("ReceivingTask","match 6");
+            if(loc.getType() == LocationModel.LOCATION_TYPE.SSID) {
+                Log.d("ReceivingTask","match 7");
+                if (!LocMessService.getInstance().WIFIS().match(loc)) return false;
+                Log.d("ReceivingTask","match 8");
+            }
+            Log.d("ReceivingTask","match 9");
+        }
+        catch (Exception e){
+            Log.d("ReceivingTask","match",e);
+            return false;
+        }
+        return true;
     }
 }

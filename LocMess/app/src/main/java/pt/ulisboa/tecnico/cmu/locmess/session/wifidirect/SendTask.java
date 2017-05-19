@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Set;
 
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
@@ -42,15 +43,13 @@ public class SendTask extends AsyncTask<Void, String, Void> {
 
         try {
             OutputStream out = socket.getOutputStream();
-
-            String profile = LocMessService.prefs.getString("profile","{}");
-
-            out.write((profile+"\n").getBytes());
-            Log.d("SendTask","Sending keys "+profile);
+            String sending = send();
+            Log.d("SendTask","sending="+sending);
+            out.write((sending+"\n").getBytes());
+            Log.d("SendTask","Sending messages");
             BufferedReader sockIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String response = sockIn.readLine();
-            Log.d("SendTask","Response "+response);
-            receive(response);
+            Log.d("SendTask","Response="+response);
             socket.close();
 
         } catch (IOException e) {
@@ -64,17 +63,31 @@ public class SendTask extends AsyncTask<Void, String, Void> {
         Log.d("WifiDirect","Sending complete!");
     }
 
-    public void receive(String msgs){
-        try{
-            JSONArray json = new JSONArray(msgs);
-            for(int i=0; i<json.length(); i++) {
-                JSONObject msg = json.getJSONObject(i);
-                msg.put("type", MessageModel.MESSAGE_TYPE.RECEIVED.toString().toLowerCase());
-                LocMessService.getInstance().MESSAGES().add(new MessageModel(msg));
+    private String send(){
+        Set<MessageModel> relay = LocMessService.getInstance().MESSAGES().relay();
+        Set<MessageModel> sent = LocMessService.getInstance().MESSAGES().sent();
+        HashSet<MessageModel> tosend = new HashSet<>();
+
+        for(MessageModel msg : sent)
+            tosend.add(msg);
+
+        for(MessageModel msg : relay) {
+            for (MessageModel other : tosend) {
+                if (msg.getId().equals(other.getId()) || !msg.isNow())
+                    LocMessService.getInstance().MESSAGES().remove(msg.getId());
+                else
+                    tosend.add(msg);
             }
         }
-        catch (JSONException e){
-            Log.d("SendTask","received",e);
+
+        JSONArray json = new JSONArray();
+        for(MessageModel msg : tosend) {
+            try {
+                json.put(msg.toJSON());
+            }
+            catch (JSONException e){}
         }
+        return json.toString();
     }
+
 }
