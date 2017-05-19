@@ -73,7 +73,7 @@ public class Messages {
 
     // -------------
 
-    private void remove(String key, String id){
+    public void remove(String key, String id){
         Log.d("Messages","remove key="+key);
         try {
             String received = Session.getInstance().get(key);

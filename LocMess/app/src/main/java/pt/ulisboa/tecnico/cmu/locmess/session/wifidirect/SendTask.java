@@ -64,6 +64,7 @@ public class SendTask extends AsyncTask<Void, String, Void> {
     }
 
     private String send(){
+
         Set<MessageModel> relay = LocMessService.getInstance().MESSAGES().relay();
         Set<MessageModel> sent = LocMessService.getInstance().MESSAGES().sent();
         HashSet<MessageModel> tosend = new HashSet<>();
@@ -72,12 +73,18 @@ public class SendTask extends AsyncTask<Void, String, Void> {
             tosend.add(msg);
 
         for(MessageModel msg : relay) {
-            for (MessageModel other : tosend) {
-                if (msg.getId().equals(other.getId()) || !msg.isNow())
-                    LocMessService.getInstance().MESSAGES().remove(msg.getId());
-                else
-                    tosend.add(msg);
+            Log.d("SendTask","send() relay="+msg.toString());
+            if(tosend.size()>0) {
+                for (MessageModel other : tosend) {
+                    Log.d("SendTask", "send() now=" + msg.isNow());
+                    if (msg.getId().equals(other.getId()) || !msg.isNow()) {
+                        Log.d("SendTask", "send() 123");
+                        LocMessService.getInstance().MESSAGES().remove("relay", msg.getId());
+                    } else
+                        tosend.add(msg);
+                }
             }
+            else tosend.add(msg);
         }
 
         JSONArray json = new JSONArray();
