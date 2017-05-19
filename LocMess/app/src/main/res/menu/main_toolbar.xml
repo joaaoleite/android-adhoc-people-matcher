@@ -15,7 +15,13 @@
         android:icon="@drawable/ic_satellite_black_24dp" />
 
     <item
-        android:title="Logout"
+        android:title="@string/settings"
+        app:showAsAction="never"
+        android:id="@+id/settings"
+        android:visible="false"/>
+
+    <item
+        android:title="@string/logout"
         app:showAsAction="never"
         android:id="@+id/logout"
         android:visible="false"

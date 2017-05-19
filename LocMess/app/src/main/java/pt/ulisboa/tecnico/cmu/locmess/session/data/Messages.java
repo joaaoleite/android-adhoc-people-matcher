@@ -1,10 +1,6 @@
 package pt.ulisboa.tecnico.cmu.locmess.session.data;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,15 +8,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.Set;
 
-import pt.ulisboa.tecnico.cmu.locmess.R;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageModel;
-import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageViewer;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.session.LocMessService;
 import pt.ulisboa.tecnico.cmu.locmess.session.Session;
@@ -51,7 +42,22 @@ public class Messages {
                 if(list.getJSONObject(i).getString("id").equals(json.getString("id")))
                     return;
             list.put(json);
-            Session.getInstance().save(key,list.toString());
+
+            if(key.equals("relay")){
+                JSONArray relay = new JSONArray();
+                JSONArray previous = new JSONArray();
+                for (int i = list.length()-1; i>=0; i--)
+                    previous.put(list.getJSONArray(i));
+
+                int limit = 100;
+                try{ limit = Integer.parseInt(Session.getInstance().get("max")); }
+                catch (Exception e){ }
+                for(int i=0; i<previous.length() || i<limit; i++){
+                    relay.put(previous.getJSONArray(i));
+                }
+                Session.getInstance().save(key,relay.toString());
+            }
+            else Session.getInstance().save(key,list.toString());
 
             if(msg.getType() == MessageModel.MESSAGE_TYPE.RECEIVED) {
                 LocMessService.getInstance().notification(msg);
@@ -65,6 +71,8 @@ public class Messages {
                 }
                 catch (NullPointerException e){}
             }
+
+
         }
         catch (JSONException e){
             Log.d("Messages","add",e);

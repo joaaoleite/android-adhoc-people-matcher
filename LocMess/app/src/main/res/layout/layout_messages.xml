@@ -19,7 +19,8 @@
         android:textStyle="bold"
         android:gravity="end"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3" />
+        android:layout_weight="0.3"
+        android:maxLines = "1"/>
 
     <TextView
         android:clickable="false"
@@ -27,6 +28,7 @@
         android:textSize="16dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.7" />
+        android:layout_weight="0.7"
+        android:maxLines = "1"/>
 
 </LinearLayout>

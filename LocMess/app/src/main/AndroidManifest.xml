@@ -58,12 +58,19 @@
         </activity>
 
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
-
         <service
             android:name=".session.LocMessService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".main.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.ulisboa.tecnico.cmu.locmess.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

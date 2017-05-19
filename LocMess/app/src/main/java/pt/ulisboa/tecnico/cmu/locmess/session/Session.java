@@ -71,6 +71,7 @@ public class Session {
             editor.putString("me",username);
             editor.putBoolean("login", true);
             editor.putString("token", newToken);
+            editor.putString("max",100+"");
             editor.apply();
         }
         else logout();
@@ -84,6 +85,7 @@ public class Session {
         editor.putString("me",null);
         editor.putBoolean("login",false);
         editor.putString("token",null);
+        editor.putString("max",null);
         editor.apply();
     }
 }

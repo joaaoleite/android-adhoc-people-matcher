@@ -12,14 +12,17 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
 
 import pt.ulisboa.tecnico.cmu.locmess.LoginActivity;
+import pt.ulisboa.tecnico.cmu.locmess.SettingsActivity;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.ListSubFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.LocationsFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.locations.MapSubFragment;
+import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessageCreator;
 import pt.ulisboa.tecnico.cmu.locmess.main.messages.MessagesFragment;
 import pt.ulisboa.tecnico.cmu.locmess.main.profile.ProfileFragment;
 import pt.ulisboa.tecnico.cmu.locmess.R;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             super.onCreateOptionsMenu(m);
             this.menu = m;
             menu.getItem(2).setVisible(true);
+            menu.getItem(3).setVisible(true);
         }
         return true;
     }
@@ -132,6 +136,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.logout:
                 this.logout(item);
+                break;
+            case R.id.settings:
+                Log.d("Test","test");
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
         return true;
